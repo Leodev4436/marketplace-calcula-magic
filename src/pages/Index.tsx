@@ -4,7 +4,6 @@ import { INITIAL_INPUTS, DEFAULT_MARKETPLACES } from '@/lib/constants';
 import { calculateMarketplace } from '@/lib/calculations';
 import { ProductForm } from '@/components/ProductForm';
 import { MarketplacePanel } from '@/components/MarketplacePanel';
-import { ResultsPanel } from '@/components/ResultsPanel';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { Button } from '@/components/ui/button';
 import { Calculator, Save, History, Trash2 } from 'lucide-react';
@@ -132,8 +131,7 @@ const Index = () => {
 
       <main className="container mx-auto px-4 py-6 space-y-6 max-w-6xl">
         <ProductForm inputs={inputs} onChange={setInputs} />
-        <MarketplacePanel marketplaces={marketplaces} onChange={setMarketplaces} />
-        <ResultsPanel inputs={inputs} marketplaces={marketplaces} />
+        <MarketplacePanel marketplaces={marketplaces} inputs={inputs} onChange={setMarketplaces} />
       </main>
     </div>
   );
