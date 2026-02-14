@@ -1,0 +1,101 @@
+import { MarketplaceConfig, GlobalInputs } from './types';
+
+export const INITIAL_INPUTS: GlobalInputs = {
+  productName: '',
+  productionCost: 0,
+  packagingCost: 0,
+  quantity: 1,
+  taxRate: 0,
+  sellingPrice: 0,
+  desiredProfit: 0,
+  desiredProfitType: 'percentage',
+};
+
+export const DEFAULT_MARKETPLACES: MarketplaceConfig[] = [
+  {
+    id: 'ml',
+    type: 'mercadolivre',
+    name: 'Mercado Livre',
+    isEnabled: true,
+    commissionRate: 12,
+    fixedFee: 0,
+    shippingCost: 0,
+    anticipationFee: 0,
+    extraOption: 'listingType',
+    extraOptionValue: 'classic',
+  },
+  {
+    id: 'shopee',
+    type: 'shopee',
+    name: 'Shopee',
+    isEnabled: true,
+    commissionRate: 20,
+    fixedFee: 4.0,
+    shippingCost: 0,
+    anticipationFee: 0,
+    extraOption: 'program',
+    extraOptionValue: 'free_shipping',
+  },
+  {
+    id: 'amazon',
+    type: 'amazon',
+    name: 'Amazon',
+    isEnabled: true,
+    commissionRate: 15,
+    fixedFee: 8.5,
+    shippingCost: 0,
+    anticipationFee: 0,
+    extraOption: 'logistics',
+    extraOptionValue: 'fba',
+  },
+  {
+    id: 'magalu',
+    type: 'magalu',
+    name: 'Magalu',
+    isEnabled: true,
+    commissionRate: 16,
+    fixedFee: 0,
+    shippingCost: 0,
+    anticipationFee: 0,
+  },
+  {
+    id: 'shein',
+    type: 'shein',
+    name: 'Shein',
+    isEnabled: true,
+    commissionRate: 16,
+    fixedFee: 0,
+    shippingCost: 0,
+    anticipationFee: 0,
+  },
+  {
+    id: 'tiktok',
+    type: 'tiktok',
+    name: 'TikTok',
+    isEnabled: true,
+    commissionRate: 8,
+    fixedFee: 0,
+    shippingCost: 0,
+    anticipationFee: 0,
+    extraOption: 'type',
+    extraOptionValue: 'standard',
+  },
+];
+
+export const MARKETPLACE_COLORS: Record<string, string> = {
+  mercadolivre: '52 100% 50%',
+  shopee: '16 100% 50%',
+  amazon: '33 100% 50%',
+  magalu: '220 90% 50%',
+  shein: '0 0% 10%',
+  tiktok: '340 80% 50%',
+};
+
+export const MARKETPLACE_BRAND_CLASSES: Record<string, { bg: string; border: string; text: string }> = {
+  mercadolivre: { bg: 'bg-yellow-400/10', border: 'border-yellow-400/40', text: 'text-yellow-600 dark:text-yellow-400' },
+  shopee: { bg: 'bg-orange-500/10', border: 'border-orange-500/40', text: 'text-orange-600 dark:text-orange-400' },
+  amazon: { bg: 'bg-amber-500/10', border: 'border-amber-500/40', text: 'text-amber-600 dark:text-amber-400' },
+  magalu: { bg: 'bg-blue-600/10', border: 'border-blue-600/40', text: 'text-blue-600 dark:text-blue-400' },
+  shein: { bg: 'bg-neutral-800/10', border: 'border-neutral-500/40', text: 'text-neutral-700 dark:text-neutral-300' },
+  tiktok: { bg: 'bg-pink-500/10', border: 'border-pink-500/40', text: 'text-pink-600 dark:text-pink-400' },
+};
