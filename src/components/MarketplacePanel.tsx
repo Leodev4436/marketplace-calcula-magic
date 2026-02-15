@@ -30,7 +30,8 @@ function MarketplaceCard({ marketplace, inputs, onChange }: MarketplaceCardProps
   const result = hasResults ? calculateMarketplace(inputs, marketplace) : null;
 
   const commissionValue = result ? inputs.sellingPrice * (marketplace.commissionRate / 100) : 0;
-  const fixedAndShipping = result ? marketplace.fixedFee + marketplace.shippingCost + (inputs.sellingPrice * (marketplace.anticipationFee / 100)) : 0;
+  const effectiveShipping = result ? (marketplace.shippingThreshold && inputs.sellingPrice < marketplace.shippingThreshold ? 0 : marketplace.shippingCost) : 0;
+  const fixedAndShipping = result ? marketplace.fixedFee + effectiveShipping + (inputs.sellingPrice * (marketplace.anticipationFee / 100)) : 0;
   const totalProductCost = result ? inputs.productionCost + inputs.packagingCost + (inputs.sellingPrice * (inputs.taxRate / 100)) : 0;
 
   const extraOptionLabel = () => {
@@ -172,7 +173,14 @@ function MarketplaceCard({ marketplace, inputs, onChange }: MarketplaceCardProps
             />
           </div>
           <div className="space-y-1.5">
-            <Label className={`text-xs font-bold uppercase tracking-wider ${brand.text}`}>Custo Frete</Label>
+            <Label className={`text-xs font-bold uppercase tracking-wider ${brand.text}`}>
+              Custo Frete
+              {marketplace.shippingThreshold && (
+                <span className="text-[10px] font-normal normal-case tracking-normal text-muted-foreground ml-1">
+                  (acima de R${marketplace.shippingThreshold})
+                </span>
+              )}
+            </Label>
             <Input
               type="number"
               min="0"

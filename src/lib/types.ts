@@ -19,6 +19,7 @@ export interface MarketplaceConfig {
   commissionRate: number;
   fixedFee: number;
   shippingCost: number;
+  shippingThreshold?: number;
   anticipationFee: number;
   extraOption?: string;
   extraOptionValue?: string | boolean;
