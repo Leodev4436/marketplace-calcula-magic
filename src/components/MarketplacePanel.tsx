@@ -26,7 +26,7 @@ function MarketplaceCard({ marketplace, inputs, onChange }: MarketplaceCardProps
   const brand = MARKETPLACE_BRAND_CLASSES[marketplace.type];
   const update = (partial: Partial<MarketplaceConfig>) => onChange({ ...marketplace, ...partial });
 
-  const hasResults = inputs.sellingPrice > 0 && inputs.productionCost > 0;
+  const hasResults = inputs.sellingPrice > 0;
   const result = hasResults ? calculateMarketplace(inputs, marketplace) : null;
 
   const commissionValue = result ? inputs.sellingPrice * (marketplace.commissionRate / 100) : 0;
@@ -52,8 +52,8 @@ function MarketplaceCard({ marketplace, inputs, onChange }: MarketplaceCardProps
           }}
           className="border rounded-lg w-full bg-muted/30"
         >
-          <ToggleGroupItem value="classic" className="flex-1 h-11 text-sm font-semibold rounded-lg data-[state=on]:bg-background data-[state=on]:shadow-sm">Clássico</ToggleGroupItem>
-          <ToggleGroupItem value="premium" className="flex-1 h-11 text-sm font-semibold rounded-lg data-[state=on]:bg-background data-[state=on]:shadow-sm">Premium</ToggleGroupItem>
+          <ToggleGroupItem value="classic" className="flex-1 h-11 text-sm font-semibold rounded-lg text-muted-foreground data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:shadow-md">Clássico</ToggleGroupItem>
+          <ToggleGroupItem value="premium" className="flex-1 h-11 text-sm font-semibold rounded-lg text-muted-foreground data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:shadow-md">Premium</ToggleGroupItem>
         </ToggleGroup>
       );
     }
@@ -69,8 +69,8 @@ function MarketplaceCard({ marketplace, inputs, onChange }: MarketplaceCardProps
           }}
           className="border rounded-lg w-full bg-muted/30"
         >
-          <ToggleGroupItem value="standard" className="flex-1 h-11 text-sm font-semibold rounded-lg data-[state=on]:bg-background data-[state=on]:shadow-sm">Padrão</ToggleGroupItem>
-          <ToggleGroupItem value="free_shipping" className="flex-1 h-11 text-sm font-semibold rounded-lg data-[state=on]:bg-background data-[state=on]:shadow-sm">Frete Grátis</ToggleGroupItem>
+          <ToggleGroupItem value="standard" className="flex-1 h-11 text-sm font-semibold rounded-lg text-muted-foreground data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:shadow-md">Padrão</ToggleGroupItem>
+          <ToggleGroupItem value="free_shipping" className="flex-1 h-11 text-sm font-semibold rounded-lg text-muted-foreground data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:shadow-md">Frete Grátis</ToggleGroupItem>
         </ToggleGroup>
       );
     }
@@ -90,9 +90,9 @@ function MarketplaceCard({ marketplace, inputs, onChange }: MarketplaceCardProps
           }}
           className="border rounded-lg w-full bg-muted/30"
         >
-          <ToggleGroupItem value="proprio" className="flex-1 h-11 text-sm font-semibold rounded-lg data-[state=on]:bg-background data-[state=on]:shadow-sm">Próprio</ToggleGroupItem>
-          <ToggleGroupItem value="dba" className="flex-1 h-11 text-sm font-semibold rounded-lg data-[state=on]:bg-background data-[state=on]:shadow-sm">DBA</ToggleGroupItem>
-          <ToggleGroupItem value="fba" className="flex-1 h-11 text-sm font-semibold rounded-lg data-[state=on]:bg-background data-[state=on]:shadow-sm">FBA</ToggleGroupItem>
+          <ToggleGroupItem value="proprio" className="flex-1 h-11 text-sm font-semibold rounded-lg text-muted-foreground data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:shadow-md">Próprio</ToggleGroupItem>
+          <ToggleGroupItem value="dba" className="flex-1 h-11 text-sm font-semibold rounded-lg text-muted-foreground data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:shadow-md">DBA</ToggleGroupItem>
+          <ToggleGroupItem value="fba" className="flex-1 h-11 text-sm font-semibold rounded-lg text-muted-foreground data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:shadow-md">FBA</ToggleGroupItem>
         </ToggleGroup>
       );
     }
@@ -108,8 +108,8 @@ function MarketplaceCard({ marketplace, inputs, onChange }: MarketplaceCardProps
           }}
           className="border rounded-lg w-full bg-muted/30"
         >
-          <ToggleGroupItem value="standard" className="flex-1 h-11 text-sm font-semibold rounded-lg data-[state=on]:bg-background data-[state=on]:shadow-sm">Padrão</ToggleGroupItem>
-          <ToggleGroupItem value="affiliate" className="flex-1 h-11 text-sm font-semibold rounded-lg data-[state=on]:bg-background data-[state=on]:shadow-sm">Afiliado</ToggleGroupItem>
+          <ToggleGroupItem value="standard" className="flex-1 h-11 text-sm font-semibold rounded-lg text-muted-foreground data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:shadow-md">Padrão</ToggleGroupItem>
+          <ToggleGroupItem value="affiliate" className="flex-1 h-11 text-sm font-semibold rounded-lg text-muted-foreground data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:shadow-md">Afiliado</ToggleGroupItem>
         </ToggleGroup>
       );
     }
