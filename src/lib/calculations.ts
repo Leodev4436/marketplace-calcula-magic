@@ -5,11 +5,12 @@ export function calculateMarketplace(
   marketplace: MarketplaceConfig
 ): CalculationResult {
   const { sellingPrice, productionCost, packagingCost, taxRate, desiredProfit, desiredProfitType, quantity } = inputs;
-  const { commissionRate, fixedFee, shippingCost, anticipationFee } = marketplace;
+  const { commissionRate, fixedFee, shippingCost, shippingThreshold, anticipationFee } = marketplace;
 
+  const effectiveShipping = shippingThreshold && sellingPrice < shippingThreshold ? 0 : shippingCost;
   const commission = sellingPrice * (commissionRate / 100);
   const anticipation = sellingPrice * (anticipationFee / 100);
-  const totalMarketplaceFees = commission + fixedFee + shippingCost + anticipation;
+  const totalMarketplaceFees = commission + fixedFee + effectiveShipping + anticipation;
 
   const netReceivable = sellingPrice - totalMarketplaceFees;
 
