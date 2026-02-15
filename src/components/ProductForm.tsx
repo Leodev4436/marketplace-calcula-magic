@@ -57,14 +57,14 @@ export function ProductForm({ inputs, onChange }: ProductFormProps) {
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          {numField('Custo de Produção', 'productionCost', 'R$')}
-          {numField('Custo de Embalagem', 'packagingCost', 'R$')}
+          {numField('Custo do Produto', 'productionCost', 'R$')}
+          {numField('Preço de Venda', 'sellingPrice', 'R$')}
         </div>
 
         <div className="grid grid-cols-3 gap-3">
-          {numField('Quantidade', 'quantity', undefined, undefined, '1')}
+          {numField('Custo Extra', 'packagingCost', 'R$')}
           {numField('Imposto', 'taxRate', undefined, '%')}
-          {numField('Preço de Venda', 'sellingPrice', 'R$')}
+          {numField('Quantidade', 'quantity', undefined, undefined, '1')}
         </div>
 
         <div className="space-y-1.5">
