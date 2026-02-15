@@ -18,7 +18,7 @@ export const DEFAULT_MARKETPLACES: MarketplaceConfig[] = [
     name: 'Mercado Livre',
     isEnabled: true,
     commissionRate: 12,
-    fixedFee: 0,
+    fixedFee: 6.5,
     shippingCost: 0,
     anticipationFee: 0,
     extraOption: 'listingType',
