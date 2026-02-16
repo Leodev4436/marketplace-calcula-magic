@@ -7,6 +7,22 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Badge } from '@/components/ui/badge';
 import { Settings2, CheckCircle2, TrendingDown, ExternalLink } from 'lucide-react';
 
+import logoMercadoLivre from '@/assets/logo-mercadolivre.jpg';
+import logoShopee from '@/assets/logo-shopee.jpg';
+import logoAmazon from '@/assets/logo-amazon.jpg';
+import logoMagalu from '@/assets/logo-magalu.jpg';
+import logoShein from '@/assets/logo-shein.jpg';
+import logoTiktok from '@/assets/logo-tiktok.jpg';
+
+const MARKETPLACE_LOGOS: Record<string, string> = {
+  mercadolivre: logoMercadoLivre,
+  shopee: logoShopee,
+  amazon: logoAmazon,
+  magalu: logoMagalu,
+  shein: logoShein,
+  tiktok: logoTiktok,
+};
+
 interface MarketplaceCardProps {
   marketplace: MarketplaceConfig;
   inputs: GlobalInputs;
@@ -128,11 +144,18 @@ function MarketplaceCard({ marketplace, inputs, onChange }: MarketplaceCardProps
     return 'TAXA FIXA';
   };
 
+  const logo = MARKETPLACE_LOGOS[marketplace.type];
+
   return (
     <div className="rounded-2xl overflow-hidden shadow-sm border bg-card">
-      {/* Colored Header */}
-      <div className={`${brand.headerBg} ${brand.headerText} px-5 py-4 flex items-center justify-between`}>
-        <h3 className="text-xl font-bold tracking-tight">{marketplace.name}</h3>
+      {/* Colored Header with Logo */}
+      <div className={`${brand.headerBg} ${brand.headerText} px-5 py-3 flex items-center justify-between`}>
+        <div className="flex items-center gap-3">
+          {logo && (
+            <img src={logo} alt={marketplace.name} className="h-10 w-auto rounded-lg object-contain" />
+          )}
+          <h3 className="text-xl font-bold tracking-tight">{marketplace.name}</h3>
+        </div>
         <a
           href={MARKETPLACE_RULES_URLS[marketplace.type] || '#'}
           target="_blank"
