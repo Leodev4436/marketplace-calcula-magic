@@ -98,5 +98,5 @@ export const MARKETPLACE_BRAND_CLASSES: Record<string, { bg: string; border: str
   amazon: { bg: 'bg-amber-500/10', border: 'border-amber-500/40', text: 'text-amber-600 dark:text-amber-400', headerBg: 'bg-neutral-800', headerText: 'text-white' },
   magalu: { bg: 'bg-blue-600/10', border: 'border-blue-600/40', text: 'text-blue-600 dark:text-blue-400', headerBg: 'bg-blue-600', headerText: 'text-white' },
   shein: { bg: 'bg-neutral-800/10', border: 'border-neutral-500/40', text: 'text-neutral-700 dark:text-neutral-300', headerBg: 'bg-neutral-900', headerText: 'text-white' },
-  tiktok: { bg: 'bg-pink-500/10', border: 'border-pink-500/40', text: 'text-pink-600 dark:text-pink-400', headerBg: 'bg-neutral-900', headerText: 'text-white' },
+  tiktok: { bg: 'bg-pink-500/10', border: 'border-pink-500/40', text: 'text-pink-600 dark:text-pink-400', headerBg: 'bg-gradient-to-r from-[#25F4EE] via-[#FE2C55] to-[#000000]', headerText: 'text-white' },
 };
