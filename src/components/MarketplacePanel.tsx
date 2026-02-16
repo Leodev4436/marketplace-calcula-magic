@@ -164,9 +164,9 @@ function MarketplaceCard({ marketplace, inputs, onChange }: MarketplaceCardProps
   return (
     <div className="rounded-2xl overflow-hidden shadow-sm border bg-card">
       {/* Header with Logo only */}
-      <div className={`${brand.headerBg} ${brand.headerText} px-5 py-3 flex items-center justify-center`}>
+      <div className={`${brand.headerBg} ${brand.headerText} px-5 py-3 flex items-center justify-start`}>
         {logo && (
-          <img src={logo} alt={marketplace.name} className="h-12 w-auto object-contain" />
+          <img src={logo} alt={marketplace.name} className="h-16 w-auto object-contain" />
         )}
       </div>
 
@@ -294,7 +294,7 @@ function MarketplaceCard({ marketplace, inputs, onChange }: MarketplaceCardProps
                       <CheckCircle2 className="h-3.5 w-3.5" /> Meta atingida!
                     </Badge>
                     <p className="text-xs text-green-700 dark:text-green-400 font-medium">
-                      +{formatCurrency(goalDetails.diffCurrency)} e +{formatPercent(goalDetails.diffPercent)} acima da meta
+                      +{formatCurrency(goalDetails.diffCurrency)} ou +{formatPercent(goalDetails.diffPercent)} acima da meta
                     </p>
                   </div>
                 ) : (
@@ -303,7 +303,7 @@ function MarketplaceCard({ marketplace, inputs, onChange }: MarketplaceCardProps
                       <TrendingDown className="h-3.5 w-3.5" /> Meta não atingida
                     </Badge>
                     <p className="text-xs text-red-600 dark:text-red-400 font-medium">
-                      Faltam {formatCurrency(goalDetails.diffCurrency)} e {formatPercent(goalDetails.diffPercent)} para a meta
+                      Faltam {formatCurrency(goalDetails.diffCurrency)} ou {formatPercent(goalDetails.diffPercent)} para a meta
                     </p>
                   </div>
                 )}
