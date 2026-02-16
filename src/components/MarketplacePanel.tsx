@@ -5,14 +5,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Badge } from '@/components/ui/badge';
-import { Settings2, CheckCircle2, TrendingDown, ExternalLink } from 'lucide-react';
+import { Settings2, CheckCircle2, TrendingDown } from 'lucide-react';
 
-import logoMercadoLivre from '@/assets/logo-mercadolivre.jpg';
-import logoShopee from '@/assets/logo-shopee.jpg';
-import logoAmazon from '@/assets/logo-amazon.jpg';
-import logoMagalu from '@/assets/logo-magalu.jpg';
-import logoShein from '@/assets/logo-shein.jpg';
-import logoTiktok from '@/assets/logo-tiktok.jpg';
+import logoMercadoLivre from '@/assets/logo-mercadolivre.png';
+import logoShopee from '@/assets/logo-shopee.png';
+import logoAmazon from '@/assets/logo-amazon.png';
+import logoMagalu from '@/assets/logo-magalu.png';
+import logoShein from '@/assets/logo-shein.png';
+import logoTiktok from '@/assets/logo-tiktok.png';
 
 const MARKETPLACE_LOGOS: Record<string, string> = {
   mercadolivre: logoMercadoLivre,
@@ -28,15 +28,6 @@ interface MarketplaceCardProps {
   inputs: GlobalInputs;
   onChange: (updated: MarketplaceConfig) => void;
 }
-
-const MARKETPLACE_RULES_URLS: Record<string, string> = {
-  mercadolivre: 'https://www.mercadolivre.com.br/ajuda/tarifas-de-venda_870',
-  shopee: 'https://seller.shopee.com.br/edu/article/13289',
-  amazon: 'https://sell.amazon.com.br/taxas-de-venda',
-  magalu: 'https://marketplace.magazineluiza.com.br/',
-  shein: 'https://br.shein.com/',
-  tiktok: 'https://seller.tiktok.com/',
-};
 
 function MarketplaceCard({ marketplace, inputs, onChange }: MarketplaceCardProps) {
   const brand = MARKETPLACE_BRAND_CLASSES[marketplace.type];
@@ -133,7 +124,6 @@ function MarketplaceCard({ marketplace, inputs, onChange }: MarketplaceCardProps
     return null;
   };
 
-  // Determine the third label for Amazon (Taxa FBA/DBA)
   const getFixedFeeLabel = () => {
     if (marketplace.type === 'amazon') {
       const val = marketplace.extraOptionValue as string;
@@ -146,32 +136,45 @@ function MarketplaceCard({ marketplace, inputs, onChange }: MarketplaceCardProps
 
   const logo = MARKETPLACE_LOGOS[marketplace.type];
 
+  // Goal details calculation
+  const getGoalDetails = () => {
+    if (!result || inputs.desiredProfit <= 0) return null;
+    
+    if (inputs.desiredProfitType === 'percentage') {
+      const diffPercent = result.profitMargin - inputs.desiredProfit;
+      const diffCurrency = result.realProfit - (inputs.sellingPrice * (inputs.desiredProfit / 100));
+      return {
+        reached: result.goalReached,
+        diffPercent: Math.abs(diffPercent),
+        diffCurrency: Math.abs(diffCurrency),
+      };
+    } else {
+      const diffCurrency = result.realProfit - inputs.desiredProfit;
+      const diffPercent = inputs.sellingPrice > 0 ? Math.abs(diffCurrency / inputs.sellingPrice) * 100 : 0;
+      return {
+        reached: result.goalReached,
+        diffPercent,
+        diffCurrency: Math.abs(diffCurrency),
+      };
+    }
+  };
+
+  const goalDetails = getGoalDetails();
+
   return (
     <div className="rounded-2xl overflow-hidden shadow-sm border bg-card">
-      {/* Colored Header with Logo */}
-      <div className={`${brand.headerBg} ${brand.headerText} px-5 py-3 flex items-center justify-between`}>
-        <div className="flex items-center gap-3">
-          {logo && (
-            <img src={logo} alt={marketplace.name} className="h-10 w-auto rounded-lg object-contain" />
-          )}
-          <h3 className="text-xl font-bold tracking-tight">{marketplace.name}</h3>
-        </div>
-        <a
-          href={MARKETPLACE_RULES_URLS[marketplace.type] || '#'}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1.5 text-sm font-medium opacity-90 hover:opacity-100 transition-opacity"
-        >
-          <ExternalLink className="h-4 w-4" />
-          Regras
-        </a>
+      {/* Header with Logo only */}
+      <div className={`${brand.headerBg} ${brand.headerText} px-5 py-3 flex items-center justify-center`}>
+        {logo && (
+          <img src={logo} alt={marketplace.name} className="h-12 w-auto object-contain" />
+        )}
       </div>
 
       <div className="p-5 space-y-4">
         {/* Extra Option Toggle */}
         {renderExtraOption()}
 
-        {/* Input Fields with brand-colored labels */}
+        {/* Input Fields */}
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <Label className={`text-xs font-bold uppercase tracking-wider ${brand.text}`}>Comissão %</Label>
@@ -270,24 +273,42 @@ function MarketplaceCard({ marketplace, inputs, onChange }: MarketplaceCardProps
               </div>
             </div>
 
-            {/* ROI + Meta */}
-            <div className="border-t border-green-200 dark:border-green-800/50 pt-3 flex items-center justify-between">
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">ROI-Lucro</span>
-                <div className="text-sm font-bold text-green-600 dark:text-green-400">
-                  +{formatPercent(result.roi)}
+            {/* ROI */}
+            <div className="border-t border-green-200 dark:border-green-800/50 pt-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">ROI-Lucro</span>
+                  <div className="text-sm font-bold text-green-600 dark:text-green-400">
+                    +{formatPercent(result.roi)}
+                  </div>
                 </div>
               </div>
-              {result.goalReached ? (
-                <Badge className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 hover:bg-green-100 gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full">
-                  <CheckCircle2 className="h-3.5 w-3.5" /> Meta atingida!
-                </Badge>
-              ) : (
-                <Badge variant="secondary" className="gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full">
-                  <TrendingDown className="h-3.5 w-3.5" /> Abaixo da meta
-                </Badge>
-              )}
             </div>
+
+            {/* Goal Details */}
+            {goalDetails && (
+              <div className="border-t border-green-200 dark:border-green-800/50 pt-3">
+                {goalDetails.reached ? (
+                  <div className="space-y-1.5">
+                    <Badge className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 hover:bg-green-100 gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full">
+                      <CheckCircle2 className="h-3.5 w-3.5" /> Meta atingida!
+                    </Badge>
+                    <p className="text-xs text-green-700 dark:text-green-400 font-medium">
+                      +{formatCurrency(goalDetails.diffCurrency)} e +{formatPercent(goalDetails.diffPercent)} acima da meta
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-1.5">
+                    <Badge variant="secondary" className="gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full text-red-600 dark:text-red-400">
+                      <TrendingDown className="h-3.5 w-3.5" /> Meta não atingida
+                    </Badge>
+                    <p className="text-xs text-red-600 dark:text-red-400 font-medium">
+                      Faltam {formatCurrency(goalDetails.diffCurrency)} e {formatPercent(goalDetails.diffPercent)} para a meta
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>

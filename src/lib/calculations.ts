@@ -8,8 +8,18 @@ export function calculateMarketplace(
   const { commissionRate, fixedFee, shippingCost, shippingThreshold, anticipationFee } = marketplace;
 
   const effectiveShipping = shippingThreshold && sellingPrice < shippingThreshold ? 0 : shippingCost;
-  const commission = sellingPrice * (commissionRate / 100);
+  let commission = sellingPrice * (commissionRate / 100);
   const anticipation = sellingPrice * (anticipationFee / 100);
+  
+  // Shopee fee cap: total marketplace fees capped at R$100
+  if (marketplace.type === 'shopee') {
+    const totalBeforeCap = commission + fixedFee + anticipation;
+    if (totalBeforeCap > 100) {
+      // Cap total fees (commission + fixed + anticipation) at R$100
+      commission = Math.max(0, 100 - fixedFee - anticipation);
+    }
+  }
+
   const totalMarketplaceFees = commission + fixedFee + effectiveShipping + anticipation;
 
   const netReceivable = sellingPrice - totalMarketplaceFees;
