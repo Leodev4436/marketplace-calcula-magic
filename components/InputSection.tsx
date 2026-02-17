@@ -110,7 +110,7 @@ export const InputSection: React.FC<InputSectionProps> = ({ values, onChange, on
         </div>
 
         {/* Row 3: Lucro Desejado & ROAS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
             
             {/* Lucro Desejado */}
             <div>
