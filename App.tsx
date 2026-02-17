@@ -25,7 +25,7 @@ function App() {
     else document.documentElement.classList.remove('dark');
   }, [darkMode]);
 
-  const handleGlobalInputChange = (field: keyof GlobalInputs, value: string | number) => {
+  const handleGlobalInputChange = (field: keyof GlobalInputs, value: string | number | boolean) => {
     setInputs(prev => ({ ...prev, [field]: value }));
   };
 
