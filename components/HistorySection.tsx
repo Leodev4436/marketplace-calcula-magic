@@ -1,5 +1,5 @@
 import React from 'react';
-import { History, ArrowUpRight, RotateCcw } from 'lucide-react';
+import { History, RotateCcw } from 'lucide-react';
 import { HistoryItem } from '../types';
 
 interface HistorySectionProps {
@@ -35,7 +35,7 @@ export const HistorySection: React.FC<HistorySectionProps> = ({ history, onLoad,
                <RotateCcw className="w-3 h-3 text-slate-300 group-hover:text-blue-500 transition-colors" />
             </div>
             <div className="font-medium text-slate-800 dark:text-slate-200 text-sm truncate mb-1">
-              {item.inputs.productName || 'Sem nome'}
+              Simulação {new Date(item.timestamp).toLocaleTimeString()}
             </div>
             <div className="flex justify-between items-end">
                <span className="text-xs text-slate-500">

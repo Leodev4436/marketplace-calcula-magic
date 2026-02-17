@@ -1,14 +1,15 @@
 import { MarketplaceConfig } from './types';
 
 export const INITIAL_INPUTS = {
-  productName: '',
   productionCost: 0,
-  packagingCost: 0,
+  packagingCost: 0, // Used as 'Extra Cost'
   quantity: 1,
-  taxRate: 0, // Default 0
+  taxRate: 0, 
   sellingPrice: 0,
-  desiredProfit: 0, // Default 0
+  desiredProfit: 0, 
   desiredProfitType: 'percentage' as const,
+  enableRoas: false,
+  roasValue: 10,
 };
 
 export const DEFAULT_MARKETPLACES: MarketplaceConfig[] = [
@@ -18,11 +19,12 @@ export const DEFAULT_MARKETPLACES: MarketplaceConfig[] = [
     name: 'Mercado Livre',
     isEnabled: true,
     commissionRate: 12, // Classic default
-    fixedFee: 0, 
+    fixedFee: 6.50, // Fixed at 6.50 requested
     shippingCost: 0,
     anticipationFee: 0,
     extraOption: 'listingType',
-    extraOptionValue: 'classic' // 'classic' or 'premium'
+    extraOptionValue: 'classic', // 'classic' or 'premium'
+    isFullSuper: false
   },
   {
     id: 'shopee',
