@@ -135,14 +135,16 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
 
     const { commissionRate, fixedFee, shippingCost, anticipationFee } = config;
 
+    const totalRevenue = sellingPrice * quantity;
     const totalBaseCost = (productionCost + packagingCost) * quantity;
-    const taxValue = (sellingPrice * taxRate) / 100;
-    const totalMarketplaceFees = (sellingPrice * commissionRate / 100) + fixedFee + shippingCost + (sellingPrice * anticipationFee / 100);
+    const taxValue = (totalRevenue * taxRate) / 100;
+    const totalMarketplaceFees = (totalRevenue * commissionRate / 100) + fixedFee + shippingCost + (totalRevenue * anticipationFee / 100);
+    const totalMarketingCost = marketingCost * quantity;
     
     // Profit = Revenue - (Base Costs + Tax + Fees + Marketing)
-    const realProfit = sellingPrice - (totalBaseCost + taxValue + totalMarketplaceFees + marketingCost);
+    const realProfit = totalRevenue - (totalBaseCost + taxValue + totalMarketplaceFees + totalMarketingCost);
     
-    const profitMargin = sellingPrice > 0 ? (realProfit / sellingPrice) * 100 : 0;
+    const profitMargin = totalRevenue > 0 ? (realProfit / totalRevenue) * 100 : 0;
     const roi = totalBaseCost > 0 ? (realProfit / totalBaseCost) * 100 : 0;
     
     // Logic: If profit >= 0, it's considered "success" color-wise in this new requirement
@@ -174,14 +176,15 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
     const marketing = (enableRoas && roasValue > 0) ? (sellingPrice / roasValue) : 0;
     const marketingPercent = (enableRoas && roasValue > 0) ? (1 / roasValue) * 100 : 0;
 
+    const totalRevenue = sellingPrice * quantity;
     return {
-        commission: (sellingPrice * config.commissionRate) / 100,
+        commission: (totalRevenue * config.commissionRate) / 100,
         fixedFee: config.fixedFee,
         cost: (productionCost + packagingCost) * quantity,
-        tax: (sellingPrice * taxRate) / 100,
+        tax: (totalRevenue * taxRate) / 100,
         shipping: config.shippingCost,
-        anticipation: (sellingPrice * config.anticipationFee) / 100,
-        marketing: marketing,
+        anticipation: (totalRevenue * config.anticipationFee) / 100,
+        marketing: marketing * quantity,
         marketingPercent: marketingPercent
     };
   }, [globalValues, config]);
