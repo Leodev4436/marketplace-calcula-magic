@@ -70,7 +70,7 @@ function App() {
             <div className="bg-indigo-600 p-1.5 rounded-lg">
               <LayoutGrid className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-lg tracking-tight">Precifica<span className="text-indigo-600">Pro</span></span>
+            <span className="font-bold text-lg tracking-tight">precifica<span className="text-indigo-600">Seller</span></span>
           </div>
           <button 
             onClick={() => setDarkMode(!darkMode)}
