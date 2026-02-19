@@ -226,7 +226,7 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
         updates.commissionRate = mode === 'standard' ? 14 : 20; 
     } else if (config.type === 'amazon') {
         // Amazon fees updates
-        updates.fixedFee = mode === 'none' ? 0 : (mode === 'dba' ? 5.50 : 8.50);
+        updates.fixedFee = mode === 'dba' ? 5.50 : 8.50;
     } else if (config.type === 'tiktok') {
         // Standard: 8% | Affiliate: 13%
         updates.commissionRate = mode === 'standard' ? 8 : 13;
@@ -268,9 +268,9 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
              {config.type === 'tiktok' && ['standard', 'affiliate'].map(mode => (
                <button key={mode} onClick={() => handleModeSwitch(mode)} className={`flex-1 py-1.5 text-xs font-bold uppercase rounded-md transition-all ${config.extraOptionValue === mode ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white' : 'text-slate-400 hover:text-slate-600'}`}>{mode === 'affiliate' ? 'Afiliado' : 'Padrão'}</button>
              ))}
-             {config.type === 'amazon' && ['none', 'dba', 'fba'].map(mode => (
-               <button key={mode} onClick={() => handleModeSwitch(mode)} className={`flex-1 py-1.5 text-xs font-bold uppercase rounded-md transition-all ${config.extraOptionValue === mode ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white' : 'text-slate-400 hover:text-slate-600'}`}>{mode === 'none' ? 'Próprio' : mode.toUpperCase()}</button>
-             ))}
+             {config.type === 'amazon' && ['dba', 'fba'].map(mode => (
+                <button key={mode} onClick={() => handleModeSwitch(mode)} className={`flex-1 py-1.5 text-xs font-bold uppercase rounded-md transition-all ${config.extraOptionValue === mode ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white' : 'text-slate-400 hover:text-slate-600'}`}>{mode.toUpperCase()}</button>
+              ))}
           </div>
         )}
 
