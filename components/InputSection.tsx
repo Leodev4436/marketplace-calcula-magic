@@ -110,19 +110,19 @@ export const InputSection: React.FC<InputSectionProps> = ({ values, onChange, on
           <div>
              <label className="block text-sm text-slate-500 mb-1.5 flex items-center gap-1">
                <Weight className="w-3.5 h-3.5" />
-               Peso (kg)
+               Peso (g)
              </label>
              <div className="relative">
                <input
                  type="number"
                  min="0"
-                 step="0.1"
+                 step="1"
                  value={values.productWeight || ''}
                  onChange={(e) => handleChange('productWeight', parseFloat(e.target.value))}
                  className="w-full pl-3 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-base focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 dark:text-white"
                  placeholder="0"
                />
-               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm pointer-events-none">kg</span>
+               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm pointer-events-none">g</span>
              </div>
           </div>
         </div>
