@@ -1,6 +1,7 @@
 import React, { useMemo, useEffect } from 'react';
 import { CheckCircle, AlertCircle, Info } from 'lucide-react';
 import { MarketplaceConfig, GlobalInputs, CalculationResult } from '../types';
+import { getMLShippingCost } from '../utils/mlShipping';
 
 interface MarketplaceCardProps {
   config: MarketplaceConfig;
@@ -65,54 +66,45 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
     if (config.type === 'mercadolivre') {
       const rawPrice = globalValues.sellingPrice;
       const price = isNaN(rawPrice) ? 0 : rawPrice;
+      const weight = isNaN(globalValues.productWeight) ? 0 : globalValues.productWeight;
       
       // Lógica "Full Super" (Supermercado)
       if (config.isFullSuper) {
           let superFee = 0;
-          
-          // Faixas de custo fixo por unidade para Full Super
-          // Só aplica se preço > 0 para evitar aplicar taxas em valor zerado,
-          // mas se o usuário estiver editando, assume-se comportamento dinâmico.
           if (price > 0) {
-            if (price < 30) {
-                superFee = 1.00; // Até R$ 29,99
-            } else if (price < 50) {
-                superFee = 2.00; // R$ 30,00 a R$ 49,99
-            } else if (price < 100) {
-                superFee = 4.00; // R$ 50,00 a R$ 99,99
-            } else if (price < 199) {
-                superFee = 6.00; // R$ 100,00 a R$ 198,99
-            } else {
-                // Acima de R$ 199. Na dúvida, zeramos ou mantemos regra.
-                superFee = 0; 
-            }
+            if (price < 30) superFee = 1.00;
+            else if (price < 50) superFee = 2.00;
+            else if (price < 100) superFee = 4.00;
+            else if (price < 199) superFee = 6.00;
+            else superFee = 0;
           }
-
-          // Atualiza apenas se o valor for diferente
           if (config.fixedFee !== superFee) {
               onUpdateConfig(config.id, { fixedFee: superFee });
           }
       } 
       // Lógica Padrão (Sem Full Super)
       else {
-          // Se o preço for menor que 79, a taxa fixa padrão é 6.50.
-          // Isso vale inclusive para preço 0 (configuração inicial/reset).
           if (price < 79) {
               if (config.fixedFee !== 6.50) onUpdateConfig(config.id, { fixedFee: 6.50 });
-          } 
-          // Se for maior ou igual a 79, taxa fixa é 0.
-          else {
+          } else {
               if (config.fixedFee !== 0) onUpdateConfig(config.id, { fixedFee: 0 });
           }
       }
 
-      // Update shipping cost logic (Updated to 22.50 for mandatory free shipping > 79)
-      // Only updates if current shipping is 0 to allow manual edits
-      if (price >= 79 && config.shippingCost === 0) {
-        onUpdateConfig(config.id, { shippingCost: 22.50 });
+      // Auto-calcular frete baseado no peso e preço
+      if (weight > 0) {
+        const mlShipping = getMLShippingCost(weight, price);
+        if (config.shippingCost !== mlShipping) {
+          onUpdateConfig(config.id, { shippingCost: mlShipping });
+        }
+      } else {
+        // Sem peso: lógica antiga (22.50 para >= 79, senão 0)
+        if (price >= 79 && config.shippingCost === 0) {
+          onUpdateConfig(config.id, { shippingCost: 22.50 });
+        }
       }
     }
-  }, [globalValues.sellingPrice, config.type, config.shippingCost, config.id, config.isFullSuper, config.fixedFee, onUpdateConfig]);
+  }, [globalValues.sellingPrice, globalValues.productWeight, config.type, config.shippingCost, config.id, config.isFullSuper, config.fixedFee, onUpdateConfig]);
 
   // Helper safe number
   const safe = (val: number) => isNaN(val) ? 0 : val;

@@ -9,6 +9,8 @@ export interface GlobalInputs {
   // Marketing / ROAS
   enableRoas: boolean;
   roasValue: number;
+  // Peso do produto
+  productWeight: number; // kg
 }
 
 export type MarketplaceType = 'mercadolivre' | 'shopee' | 'amazon' | 'shein' | 'magalu' | 'tiktok';
