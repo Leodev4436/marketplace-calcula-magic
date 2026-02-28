@@ -10,6 +10,7 @@ export const INITIAL_INPUTS = {
   desiredProfitType: 'percentage' as const,
   enableRoas: false,
   roasValue: 10,
+  productWeight: 0,
 };
 
 export const DEFAULT_MARKETPLACES: MarketplaceConfig[] = [
