@@ -66,7 +66,8 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
     if (config.type === 'mercadolivre') {
       const rawPrice = globalValues.sellingPrice;
       const price = isNaN(rawPrice) ? 0 : rawPrice;
-      const weight = isNaN(globalValues.productWeight) ? 0 : globalValues.productWeight;
+      const weightGrams = isNaN(globalValues.productWeight) ? 0 : globalValues.productWeight;
+      const weight = weightGrams / 1000; // converter gramas para kg para lookup na tabela
       
       // Lógica "Full Super" (Supermercado)
       if (config.isFullSuper) {

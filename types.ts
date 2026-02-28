@@ -10,7 +10,7 @@ export interface GlobalInputs {
   enableRoas: boolean;
   roasValue: number;
   // Peso do produto
-  productWeight: number; // kg
+  productWeight: number; // gramas
 }
 
 export type MarketplaceType = 'mercadolivre' | 'shopee' | 'amazon' | 'shein' | 'magalu' | 'tiktok';
