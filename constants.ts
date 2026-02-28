@@ -32,12 +32,14 @@ export const DEFAULT_MARKETPLACES: MarketplaceConfig[] = [
     type: 'shopee',
     name: 'Shopee',
     isEnabled: true,
-    commissionRate: 20, // Free Shipping default (20%)
-    fixedFee: 4.00,
+    commissionRate: 20, // Auto-calculated by price tier
+    fixedFee: 4.00,     // Auto-calculated by price tier
     shippingCost: 0,
     anticipationFee: 0,
     extraOption: 'program',
-    extraOptionValue: 'free_shipping' // Default to 'free_shipping'
+    extraOptionValue: 'free_shipping', // 'standard' or 'free_shipping'
+    shopeeSellerType: 'cnpj',
+    shopeePixSubsidy: false,
   },
   {
     id: 'amazon',

@@ -2,6 +2,7 @@ import React, { useMemo, useEffect } from 'react';
 import { CheckCircle, AlertCircle, Info } from 'lucide-react';
 import { MarketplaceConfig, GlobalInputs, CalculationResult } from '../types';
 import { getMLShippingCost } from '../utils/mlShipping';
+import { getShopeeFees } from '../utils/shopeeShipping';
 
 interface MarketplaceCardProps {
   config: MarketplaceConfig;
@@ -106,6 +107,24 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
       }
     }
   }, [globalValues.sellingPrice, globalValues.productWeight, config.type, config.shippingCost, config.id, config.isFullSuper, config.fixedFee, onUpdateConfig]);
+
+  // --- Lógica de Auto-Cálculo Shopee ---
+  useEffect(() => {
+    if (config.type !== 'shopee') return;
+    const price = isNaN(globalValues.sellingPrice) ? 0 : globalValues.sellingPrice;
+    const sellerType = config.shopeeSellerType || 'cnpj';
+    const mode = (config.extraOptionValue as string) === 'standard' ? 'standard' : 'free_shipping';
+    
+    const fees = getShopeeFees(price, sellerType, mode);
+    
+    const updates: Partial<MarketplaceConfig> = {};
+    if (config.commissionRate !== fees.commissionRate) updates.commissionRate = fees.commissionRate;
+    if (config.fixedFee !== fees.fixedFee) updates.fixedFee = fees.fixedFee;
+    
+    if (Object.keys(updates).length > 0) {
+      onUpdateConfig(config.id, updates);
+    }
+  }, [globalValues.sellingPrice, config.type, config.shopeeSellerType, config.extraOptionValue, config.id, onUpdateConfig]);
 
   // Helper safe number
   const safe = (val: number) => isNaN(val) ? 0 : val;
@@ -267,6 +286,60 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
           </div>
         )}
 
+        {/* Shopee: CPF/CNPJ Toggle + Pix Subsidy */}
+        {config.type === 'shopee' && (
+          <div className="space-y-3">
+            {/* CPF / CNPJ Selector */}
+            <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+              {['cnpj', 'cpf'].map(type => (
+                <button
+                  key={type}
+                  onClick={() => onUpdateConfig(config.id, { shopeeSellerType: type as 'cnpj' | 'cpf' })}
+                  className={`flex-1 py-1.5 text-xs font-bold uppercase rounded-md transition-all ${
+                    config.shopeeSellerType === type
+                      ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white'
+                      : 'text-slate-400 hover:text-slate-600'
+                  }`}
+                >
+                  {type.toUpperCase()}
+                </button>
+              ))}
+            </div>
+
+            {/* CPF Warning */}
+            {config.shopeeSellerType === 'cpf' && (
+              <div className="flex items-start gap-2 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-2.5">
+                <Info className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                <span className="text-[11px] text-amber-700 dark:text-amber-300">
+                  Vendedores CPF com +450 pedidos/90 dias pagam <strong>R$ 3,00 extra</strong> por item.
+                </span>
+              </div>
+            )}
+
+            {/* Pix Subsidy Toggle */}
+            <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Subsídio Pix</span>
+                <div className="group relative">
+                  <Info className="w-4 h-4 text-blue-500 cursor-help" />
+                  <div className="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 w-56 p-3 bg-slate-900 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 shadow-xl pointer-events-none text-left">
+                    <p>Desconto aplicado ao comprador via Pix. Não afeta o lucro do vendedor.</p>
+                    <div className="absolute left-1/2 top-full -translate-x-1/2 border-8 border-transparent border-t-slate-900"></div>
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => onUpdateConfig(config.id, { shopeePixSubsidy: !config.shopeePixSubsidy })}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900 ${
+                  config.shopeePixSubsidy ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-600'
+                }`}
+              >
+                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${config.shopeePixSubsidy ? 'translate-x-6' : 'translate-x-1'}`} />
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* 3. Toggle Supermercado (Full Super) - SOMENTE MERCADO LIVRE */}
         {config.type === 'mercadolivre' && (
           <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800 transition-colors">
@@ -374,6 +447,22 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
                     <span className="text-red-600 dark:text-red-400 font-semibold">- R$ {breakdown.anticipation.toFixed(2)}</span>
                   </div>
                   )}
+                  {/* Shopee Pix Subsidy Info (não afeta lucro) */}
+                  {config.type === 'shopee' && config.shopeePixSubsidy && (() => {
+                    const price = safe(globalValues.sellingPrice);
+                    const fees = getShopeeFees(price, config.shopeeSellerType || 'cnpj', 'standard');
+                    if (fees.pixSubsidyRate <= 0) return null;
+                    return (
+                      <div className="flex justify-between items-center text-sm bg-blue-50 dark:bg-blue-950/30 rounded-md px-2 py-1.5 mt-1">
+                        <span className="text-blue-600 dark:text-blue-400 font-medium flex items-center gap-1">
+                          💳 Subsídio Pix ({fees.pixSubsidyRate}%)
+                        </span>
+                        <span className="text-blue-600 dark:text-blue-400 font-semibold">
+                          Comprador paga - R$ {fees.pixSubsidyValue.toFixed(2)}
+                        </span>
+                      </div>
+                    );
+                  })()}
              </div>
 
              <div className="h-px bg-slate-200 dark:bg-slate-800 my-4"></div>
