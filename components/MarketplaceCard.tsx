@@ -150,7 +150,19 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
     const totalRevenue = sellingPrice * quantity;
     const totalBaseCost = (productionCost + packagingCost) * quantity;
     const taxValue = (totalRevenue * taxRate) / 100;
-    const totalMarketplaceFees = (totalRevenue * commissionRate / 100) + fixedFee + shippingCost + (totalRevenue * anticipationFee / 100);
+    
+    // Comissão bruta
+    let grossCommission = (totalRevenue * commissionRate / 100) + fixedFee;
+    
+    // Aplicar subsídio Pix (reduz comissão) se Shopee + ativado
+    let pixSubsidyDiscount = 0;
+    if (config.type === 'shopee' && config.shopeePixSubsidy) {
+      const fees = getShopeeFees(sellingPrice, config.shopeeSellerType || 'cnpj', 'standard');
+      pixSubsidyDiscount = fees.pixSubsidyValue * quantity;
+      grossCommission = Math.max(0, grossCommission - pixSubsidyDiscount);
+    }
+    
+    const totalMarketplaceFees = grossCommission + shippingCost + (totalRevenue * anticipationFee / 100);
     const totalMarketingCost = marketingCost * quantity;
     
     // Profit = Revenue - (Base Costs + Tax + Fees + Marketing)
@@ -234,8 +246,8 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
         // Classic: 12% | Premium: 17%
         updates.commissionRate = mode === 'classic' ? 12 : 17;
     } else if (config.type === 'shopee') {
-        // Standard: 14% | Free Shipping: 20%
-        updates.commissionRate = mode === 'standard' ? 14 : 20; 
+        // Shopee: comissão sempre 14% em ambos os modos
+        // A diferença é apenas na participação do frete grátis
     } else if (config.type === 'amazon') {
         // Amazon fees updates
         updates.fixedFee = mode === 'dba' ? 5.50 : 8.50;
@@ -322,10 +334,14 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
                 <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Subsídio Pix</span>
                 <div className="group relative">
                   <Info className="w-4 h-4 text-blue-500 cursor-help" />
-                  <div className="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 w-56 p-3 bg-slate-900 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 shadow-xl pointer-events-none text-left">
-                    <p>Desconto aplicado ao comprador via Pix. Não afeta o lucro do vendedor.</p>
-                    <div className="absolute left-1/2 top-full -translate-x-1/2 border-8 border-transparent border-t-slate-900"></div>
-                  </div>
+                   <div className="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 w-64 p-3 bg-slate-900 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 shadow-xl pointer-events-none text-left">
+                     <p className="font-bold mb-1">O que é o Subsídio Pix?</p>
+                     <p className="mb-1">Quando o comprador paga via Pix, a Shopee reduz parte da comissão cobrada do vendedor.</p>
+                     <p className="mb-1">O subsídio é calculado sobre o valor do item e subtraído diretamente da comissão bruta.</p>
+                     <p><strong>Faixas:</strong> 5% (R$80-R$499) | 8% (acima R$500)</p>
+                     <p className="mt-1 text-blue-300">Até R$79,99 não possui subsídio Pix.</p>
+                     <div className="absolute left-1/2 top-full -translate-x-1/2 border-8 border-transparent border-t-slate-900"></div>
+                   </div>
                 </div>
               </div>
               <button
@@ -454,9 +470,8 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
                     const fees = getShopeeFees(price, config.shopeeSellerType || 'cnpj', 'standard');
                     if (fees.pixSubsidyRate <= 0) return null;
                     const subsidyValue = fees.pixSubsidyValue * quantity;
-                    const discountOnCommission = fees.commissionRate * (fees.pixSubsidyRate / 100);
-                    const effectiveRate = fees.commissionRate - discountOnCommission;
-                    const commissionDiscount = (price * quantity * discountOnCommission) / 100;
+                    const grossCommission = (price * quantity * fees.commissionRate / 100) + fees.fixedFee;
+                    const finalCommission = Math.max(0, grossCommission - subsidyValue);
                     const customerPrice = price - fees.pixSubsidyValue;
                     return (
                       <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg px-3 py-2.5 mt-1 space-y-1.5 border border-blue-100 dark:border-blue-900">
@@ -466,12 +481,12 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
                         <div className="flex justify-between items-center text-sm">
                           <span className="text-blue-600 dark:text-blue-400 font-medium">Desconto na comissão</span>
                           <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                            -{discountOnCommission.toFixed(2)}% (R$ {commissionDiscount.toFixed(2)})
+                            - R$ {subsidyValue.toFixed(2)}
                           </span>
                         </div>
                         <div className="flex justify-between items-center text-sm">
-                          <span className="text-blue-600 dark:text-blue-400 font-medium">Comissão efetiva</span>
-                          <span className="text-blue-700 dark:text-blue-300 font-bold">{effectiveRate.toFixed(2)}%</span>
+                          <span className="text-blue-600 dark:text-blue-400 font-medium">Comissão final c/ Pix</span>
+                          <span className="text-blue-700 dark:text-blue-300 font-bold">R$ {finalCommission.toFixed(2)}</span>
                         </div>
                         <div className="flex justify-between items-center text-sm">
                           <span className="text-blue-600 dark:text-blue-400 font-medium">Cliente paga (Pix)</span>
