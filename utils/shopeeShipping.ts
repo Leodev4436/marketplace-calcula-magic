@@ -1,11 +1,11 @@
 /**
  * Shopee — Tabela de comissões 2026 (vigência a partir de 01/03/2026)
  * Comissão já contempla taxa de transação.
- * Todas as faixas: 14% de comissão percentual.
+ * Faixa até R$79,99: 20% | Demais faixas: 14%.
  */
 
 export interface ShopeeFeeResult {
-  commissionRate: number; // % (sempre 14%)
+  commissionRate: number; // % (20% até R$79,99 ou 14% demais)
   fixedFee: number;       // R$ (taxa fixa por faixa, já inclui cpfExtra se aplicável)
   cpfExtra: number;       // R$ 3 extra para CPF >450 pedidos
   pixSubsidyRate: number; // % subsídio Pix (0, 5 ou 8)
@@ -36,24 +36,29 @@ export function getShopeeFees(
 ): ShopeeFeeResult {
   const price = isNaN(sellingPrice) ? 0 : sellingPrice;
 
-  // Comissão percentual é sempre 14% em todas as faixas
-  const commissionRate = 14;
+  // Comissão percentual: 20% até R$79,99, 14% nas demais faixas
+  let commissionRate: number;
   let fixedFee: number;
   let pixSubsidyRate: number;
 
   if (price <= 79.99) {
+    commissionRate = 20;
     fixedFee = 4;
     pixSubsidyRate = 0;
   } else if (price <= 99.99) {
-    fixedFee = 12;
+    commissionRate = 14;
+    fixedFee = 16;
     pixSubsidyRate = 5;
   } else if (price <= 199.99) {
+    commissionRate = 14;
     fixedFee = 20;
     pixSubsidyRate = 5;
   } else if (price <= 499.99) {
-    fixedFee = 24;
+    commissionRate = 14;
+    fixedFee = 26;
     pixSubsidyRate = 5;
   } else {
+    commissionRate = 14;
     fixedFee = 26;
     pixSubsidyRate = 8;
   }

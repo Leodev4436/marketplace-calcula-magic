@@ -329,30 +329,63 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
             )}
 
             {/* Pix Subsidy Toggle */}
-            <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Subsídio Pix</span>
-                <div className="group relative">
-                  <Info className="w-4 h-4 text-blue-500 cursor-help" />
-                   <div className="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 w-64 p-3 bg-slate-900 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 shadow-xl pointer-events-none text-left">
-                     <p className="font-bold mb-1">O que é o Subsídio Pix?</p>
-                     <p className="mb-1">Quando o comprador paga via Pix, a Shopee reduz parte da comissão cobrada do vendedor.</p>
-                     <p className="mb-1">O subsídio é calculado sobre o valor do item e subtraído diretamente da comissão bruta.</p>
-                     <p><strong>Faixas:</strong> 5% (R$80-R$499) | 8% (acima R$500)</p>
-                     <p className="mt-1 text-blue-300">Até R$79,99 não possui subsídio Pix.</p>
-                     <div className="absolute left-1/2 top-full -translate-x-1/2 border-8 border-transparent border-t-slate-900"></div>
-                   </div>
+            {(() => {
+              const currentPrice = safe(globalValues.sellingPrice);
+              const pixAvailable = currentPrice >= 80;
+              const pixBlocked = !pixAvailable && currentPrice > 0;
+              return (
+                <div className="space-y-2">
+                  <div className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${
+                    pixBlocked 
+                      ? 'bg-slate-100 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 opacity-70' 
+                      : 'bg-slate-50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-800'
+                  }`}>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-sm font-medium ${pixBlocked ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-300'}`}>Subsídio Pix</span>
+                      <div className="group relative">
+                        <Info className={`w-4 h-4 cursor-help ${pixBlocked ? 'text-slate-400' : 'text-blue-500'}`} />
+                         <div className="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 w-64 p-3 bg-slate-900 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 shadow-xl pointer-events-none text-left">
+                           <p className="font-bold mb-1">O que é o Subsídio Pix?</p>
+                           <p className="mb-1">Quando o comprador paga via Pix, a Shopee concede um desconto ao cliente. Esse desconto é abatido da comissão da Shopee — o vendedor recebe o mesmo valor líquido.</p>
+                           <p className="mb-1">O desconto é calculado sobre o valor do item e subtraído diretamente da comissão bruta da Shopee.</p>
+                           <p><strong>Faixas de desconto:</strong></p>
+                           <ul className="list-disc pl-3 mt-1 space-y-0.5">
+                             <li>Até R$79,99: <strong>Sem subsídio</strong></li>
+                             <li>R$80 a R$499,99: <strong>5%</strong></li>
+                             <li>Acima de R$500: <strong>8%</strong></li>
+                           </ul>
+                           <p className="mt-1.5 text-blue-300 text-[10px]">Ex: Item R$500 → cliente paga R$460 (8% desc.), vendedor recebe os mesmos R$404.</p>
+                           <div className="absolute left-1/2 top-full -translate-x-1/2 border-8 border-transparent border-t-slate-900"></div>
+                         </div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        if (pixBlocked) return;
+                        onUpdateConfig(config.id, { shopeePixSubsidy: !config.shopeePixSubsidy });
+                      }}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+                        pixBlocked 
+                          ? 'bg-slate-200 dark:bg-slate-700 cursor-not-allowed' 
+                          : config.shopeePixSubsidy 
+                            ? 'bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900' 
+                            : 'bg-slate-300 dark:bg-slate-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900'
+                      }`}
+                    >
+                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${config.shopeePixSubsidy && !pixBlocked ? 'translate-x-6' : 'translate-x-1'}`} />
+                    </button>
+                  </div>
+                  {pixBlocked && (
+                    <div className="flex items-start gap-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5">
+                      <Info className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                        O Subsídio Pix não está disponível para produtos até <strong>R$ 79,99</strong>. Ele é aplicado apenas a partir de <strong>R$ 80,00</strong>.
+                      </span>
+                    </div>
+                  )}
                 </div>
-              </div>
-              <button
-                onClick={() => onUpdateConfig(config.id, { shopeePixSubsidy: !config.shopeePixSubsidy })}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900 ${
-                  config.shopeePixSubsidy ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-600'
-                }`}
-              >
-                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${config.shopeePixSubsidy ? 'translate-x-6' : 'translate-x-1'}`} />
-              </button>
-            </div>
+              );
+            })()}
           </div>
         )}
 
