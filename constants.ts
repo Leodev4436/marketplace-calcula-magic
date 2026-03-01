@@ -32,7 +32,7 @@ export const DEFAULT_MARKETPLACES: MarketplaceConfig[] = [
     type: 'shopee',
     name: 'Shopee',
     isEnabled: true,
-    commissionRate: 20, // Auto-calculated by price tier
+    commissionRate: 14, // Sempre 14% em todas as faixas (2026)
     fixedFee: 4.00,     // Auto-calculated by price tier
     shippingCost: 0,
     anticipationFee: 0,
