@@ -346,7 +346,7 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
                         <Info className={`w-4 h-4 cursor-help ${pixBlocked ? 'text-slate-400' : 'text-blue-500'}`} />
                          <div className="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 w-56 p-2.5 bg-slate-900 text-white text-[11px] leading-snug rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 shadow-xl pointer-events-none text-left">
                            <p className="font-bold mb-1">Subsídio Pix</p>
-                           <p className="mb-1">Cliente paga menos via Pix, mas o desconto sai da comissão da Shopee. Seu lucro não muda.</p>
+                           <p className="mb-1">Cliente paga menos via Pix. O desconto é abatido da comissão da Shopee.</p>
                            <p className="font-semibold">Faixas:</p>
                            <ul className="list-disc pl-3 mt-0.5 space-y-0">
                              <li>Até R$79,99: <strong>Sem</strong></li>
