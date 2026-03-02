@@ -503,15 +503,21 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
                     const subsidyValue = fees.pixSubsidyValue * quantity;
                     return (
                       <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg px-3 py-2.5 mt-1 space-y-1.5 border border-blue-100 dark:border-blue-900">
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <span className="text-xs font-bold text-blue-700 dark:text-blue-300">💳 Subsídio Pix ({fees.pixSubsidyRate}%)</span>
-                        </div>
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="text-blue-600 dark:text-blue-400 font-medium">Desconto na comissão</span>
-                          <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                            - R$ {subsidyValue.toFixed(2)}
-                          </span>
-                        </div>
+                         <div className="flex items-center gap-1.5 mb-1">
+                           <span className="text-xs font-bold text-blue-700 dark:text-blue-300">💳 Subsídio Pix ({fees.pixSubsidyRate}% sobre {fees.commissionRate}%)</span>
+                         </div>
+                         <div className="flex justify-between items-center text-sm">
+                           <span className="text-blue-600 dark:text-blue-400 font-medium">Taxa efetiva</span>
+                           <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                             {(fees.commissionRate - (fees.commissionRate * fees.pixSubsidyRate / 100)).toFixed(2)}%
+                           </span>
+                         </div>
+                         <div className="flex justify-between items-center text-sm">
+                           <span className="text-blue-600 dark:text-blue-400 font-medium">Desconto na comissão</span>
+                           <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                             - R$ {subsidyValue.toFixed(2)}
+                           </span>
+                         </div>
                         <div className="flex justify-between items-center text-sm">
                           <span className="text-blue-600 dark:text-blue-400 font-medium">Cliente paga</span>
                           <span className="text-blue-700 dark:text-blue-300 font-semibold">
