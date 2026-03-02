@@ -344,17 +344,15 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
                       <span className={`text-sm font-medium ${pixBlocked ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-300'}`}>Subsídio Pix</span>
                       <div className="group relative">
                         <Info className={`w-4 h-4 cursor-help ${pixBlocked ? 'text-slate-400' : 'text-blue-500'}`} />
-                         <div className="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 w-64 p-3 bg-slate-900 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 shadow-xl pointer-events-none text-left">
-                           <p className="font-bold mb-1">O que é o Subsídio Pix?</p>
-                           <p className="mb-1">Quando o comprador paga via Pix, a Shopee concede um desconto ao cliente. Esse desconto é abatido da comissão da Shopee — o vendedor recebe o mesmo valor líquido.</p>
-                           <p className="mb-1">O desconto é calculado sobre o valor do item e subtraído diretamente da comissão bruta da Shopee.</p>
-                           <p><strong>Faixas de desconto:</strong></p>
-                           <ul className="list-disc pl-3 mt-1 space-y-0.5">
-                             <li>Até R$79,99: <strong>Sem subsídio</strong></li>
-                             <li>R$80 a R$499,99: <strong>5%</strong></li>
-                             <li>Acima de R$500: <strong>8%</strong></li>
+                         <div className="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 w-56 p-2.5 bg-slate-900 text-white text-[11px] leading-snug rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 shadow-xl pointer-events-none text-left">
+                           <p className="font-bold mb-1">Subsídio Pix</p>
+                           <p className="mb-1">Cliente paga menos via Pix, mas o desconto sai da comissão da Shopee. Seu lucro não muda.</p>
+                           <p className="font-semibold">Faixas:</p>
+                           <ul className="list-disc pl-3 mt-0.5 space-y-0">
+                             <li>Até R$79,99: <strong>Sem</strong></li>
+                             <li>R$80–R$499,99: <strong>5%</strong></li>
+                             <li>+R$500: <strong>8%</strong></li>
                            </ul>
-                           <p className="mt-1.5 text-blue-300 text-[10px]">Ex: Item R$500 → cliente paga R$460 (8% desc.), vendedor recebe os mesmos R$404.</p>
                            <div className="absolute left-1/2 top-full -translate-x-1/2 border-8 border-transparent border-t-slate-900"></div>
                          </div>
                       </div>
@@ -512,6 +510,12 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
                           <span className="text-blue-600 dark:text-blue-400 font-medium">Desconto na comissão</span>
                           <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
                             - R$ {subsidyValue.toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-blue-600 dark:text-blue-400 font-medium">Cliente paga</span>
+                          <span className="text-blue-700 dark:text-blue-300 font-semibold">
+                            R$ {(price * quantity - (fees.pixSubsidyValue * quantity)).toFixed(2)}
                           </span>
                         </div>
                       </div>
