@@ -84,8 +84,10 @@ export function getShopeeFees(
   // CPF extra: R$3 por item (para vendedores CPF com > 450 pedidos/90 dias)
   const cpfExtra = sellerType === 'cpf' ? 3 : 0;
 
-  // Subsídio Pix (valor em R$) - aplicado sobre o preço do item
-  const pixSubsidyValue = price > 0 ? (price * pixSubsidyRate) / 100 : 0;
+  // Subsídio Pix: desconto é X% sobre a comissão (não sobre o preço)
+  // Ex: 5% de 14% = 0,70% de desconto real sobre o preço
+  const effectiveDiscountRate = (commissionRate * pixSubsidyRate) / 100; // ex: 14*5/100 = 0.70
+  const pixSubsidyValue = price > 0 ? (price * effectiveDiscountRate) / 100 : 0;
 
   return {
     commissionRate,
