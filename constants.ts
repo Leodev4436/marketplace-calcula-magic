@@ -20,7 +20,7 @@ export const DEFAULT_MARKETPLACES: MarketplaceConfig[] = [
     name: 'Mercado Livre',
     isEnabled: true,
     commissionRate: 12, // Classic default
-    fixedFee: 6.50, // Fixed at 6.50 requested
+    fixedFee: 0, // Custo operacional já incluso na tabela de frete 2026
     shippingCost: 0,
     anticipationFee: 0,
     extraOption: 'listingType',
