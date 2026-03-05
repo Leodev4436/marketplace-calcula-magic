@@ -84,13 +84,9 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
               onUpdateConfig(config.id, { fixedFee: superFee });
           }
       } 
-      // Lógica Padrão (Sem Full Super)
+      // Lógica Padrão (Sem Full Super) — sem taxa fixa, custo operacional já incluso na tabela de frete
       else {
-          if (price < 79) {
-              if (config.fixedFee !== 6.50) onUpdateConfig(config.id, { fixedFee: 6.50 });
-          } else {
-              if (config.fixedFee !== 0) onUpdateConfig(config.id, { fixedFee: 0 });
-          }
+          if (config.fixedFee !== 0) onUpdateConfig(config.id, { fixedFee: 0 });
       }
 
       // Auto-calcular frete baseado no peso e preço
