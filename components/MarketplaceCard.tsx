@@ -346,7 +346,7 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
                         <Info className={`w-4 h-4 cursor-help ${pixBlocked ? 'text-slate-400' : 'text-blue-500'}`} />
                          <div className="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 w-56 p-2.5 bg-slate-900 text-white text-[11px] leading-snug rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 shadow-xl pointer-events-none text-left">
                            <p className="font-bold mb-1">Subsídio Pix</p>
-                           <p className="mb-1">Cliente paga menos via Pix. O desconto é abatido da comissão da Shopee.</p>
+                           <p className="mb-1">Cliente paga menos via Pix. O desconto é absorvido pela Shopee — sua margem de lucro permanece a mesma.</p>
                            <p className="font-semibold">Faixas:</p>
                            <ul className="list-disc pl-3 mt-0.5 space-y-0">
                              <li>Até R$79,99: <strong>Sem</strong></li>
@@ -510,12 +510,6 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
                            <span className="text-blue-600 dark:text-blue-400 font-medium">Taxa efetiva</span>
                            <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
                              {(fees.commissionRate - (fees.commissionRate * fees.pixSubsidyRate / 100)).toFixed(2)}%
-                           </span>
-                         </div>
-                         <div className="flex justify-between items-center text-sm">
-                           <span className="text-blue-600 dark:text-blue-400 font-medium">Desconto na comissão</span>
-                           <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                             - R$ {subsidyValue.toFixed(2)}
                            </span>
                          </div>
                         <div className="flex justify-between items-center text-sm">
