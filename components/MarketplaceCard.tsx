@@ -154,12 +154,12 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
     // Comissão bruta
     let grossCommission = (totalRevenue * commissionRate / 100) + fixedFee;
     
-    // Aplicar subsídio Pix (reduz comissão) se Shopee + ativado
+    // Subsídio Pix: NÃO altera lucro do vendedor (é absorvido pela plataforma)
+    // Mantido apenas para exibição informativa
     let pixSubsidyDiscount = 0;
     if (config.type === 'shopee' && config.shopeePixSubsidy) {
       const fees = getShopeeFees(sellingPrice, config.shopeeSellerType || 'cnpj', 'standard');
       pixSubsidyDiscount = fees.pixSubsidyValue * quantity;
-      grossCommission = Math.max(0, grossCommission - pixSubsidyDiscount);
     }
     
     const totalMarketplaceFees = grossCommission + shippingCost + (totalRevenue * anticipationFee / 100);
