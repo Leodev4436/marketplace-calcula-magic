@@ -78,8 +78,8 @@ export const DEFAULT_MARKETPLACES: MarketplaceConfig[] = [
     type: 'tiktok',
     name: 'TikTok',
     isEnabled: true,
-    commissionRate: 8, // Standard default
-    fixedFee: 0,
+    commissionRate: 6, // Standard default
+    fixedFee: 4,
     shippingCost: 0,
     anticipationFee: 0,
     extraOption: 'type',
