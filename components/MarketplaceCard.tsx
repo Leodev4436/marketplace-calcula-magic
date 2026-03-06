@@ -8,6 +8,7 @@ interface MarketplaceCardProps {
   config: MarketplaceConfig;
   globalValues: GlobalInputs;
   onUpdateConfig: (id: string, newConfig: Partial<MarketplaceConfig>) => void;
+  onApplyPrice?: (price: number) => void;
 }
 
 // Configuração de Assets das Marcas (Cores e URLs de Imagens)
