@@ -517,6 +517,22 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
            </div>
         </div>
 
+        {/* Preço Sugerido (quando não há preço de venda) */}
+        {showSuggestedPrice && (
+          <div className="mt-auto -mx-5 -mb-5 px-5 pt-4 pb-5 border-t border-slate-100 dark:border-slate-800 bg-indigo-50 dark:bg-indigo-950/30">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
+              <span className="text-xs font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider">Preço Sugerido</span>
+            </div>
+            <div className="text-3xl font-black text-indigo-600 dark:text-indigo-400">
+              R$ {suggestedPrice!.toFixed(2)}
+            </div>
+            <p className="text-[11px] text-indigo-500 dark:text-indigo-400 mt-1.5">
+              Preço mínimo de venda para atingir {globalValues.desiredProfitType === 'percentage' ? `${globalValues.desiredProfit}% de margem` : `R$ ${globalValues.desiredProfit.toFixed(2)} de lucro`}
+            </p>
+          </div>
+        )}
+
         {/* 5. Resultado Detalhado (Novo Layout) */}
         {showResults && (
           <div className={`mt-auto -mx-5 -mb-5 px-5 pt-4 pb-5 border-t border-slate-100 dark:border-slate-800 ${results.goalReached ? 'bg-[#fcfdfa] dark:bg-slate-900/50' : 'bg-[#fffafa] dark:bg-slate-900/50'}`}>
