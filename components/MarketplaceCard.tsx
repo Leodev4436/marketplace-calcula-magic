@@ -215,7 +215,6 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
     const desiredProfit = safe(globalValues.desiredProfit);
     const { desiredProfitType } = globalValues;
     
-    // Fix: Explicit check for NaN to prevent "Falta NaN%" error
     if (sellingPrice <= 0 || !desiredProfit || isNaN(desiredProfit) || desiredProfit <= 0) return null;
 
     const targetProfitValue = desiredProfitType === 'percentage' 
@@ -231,6 +230,91 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
       diffPercent: diffPercent
     };
   }, [globalValues, results.realProfit]);
+
+  // --- Preço Sugerido (quando não há preço de venda mas há meta de lucro) ---
+  const suggestedPrice = useMemo(() => {
+    const sellingPrice = safe(globalValues.sellingPrice);
+    const desiredProfit = safe(globalValues.desiredProfit);
+    const productionCost = safe(globalValues.productionCost);
+    const packagingCost = safe(globalValues.packagingCost);
+    const quantity = globalValues.quantity ? safe(globalValues.quantity) : 1;
+    const taxRate = safe(globalValues.taxRate);
+    const enableRoas = globalValues.enableRoas;
+    const roasValue = safe(globalValues.roasValue);
+    const weightKg = safe(globalValues.productWeight) / 1000;
+
+    // Só mostra quando NÃO tem preço de venda e TEM meta de lucro ou custo
+    if (sellingPrice > 0 || (desiredProfit <= 0 && productionCost <= 0)) return null;
+
+    const baseCosts = (productionCost + packagingCost) * quantity;
+    
+    // Taxa percentual total (comissão + imposto + antecipação + marketing)
+    const rateSum = config.commissionRate + taxRate + config.anticipationFee;
+    const roasFraction = (enableRoas && roasValue > 0) ? (1 / roasValue) : 0;
+    const totalRate = rateSum / 100 + roasFraction;
+
+    // Preço precisa cobrir: baseCosts + targetProfit + fixedFees + shipping
+    // price * (1 - totalRate) = baseCosts + targetProfit + fixedFees + shipping (para currency)
+    // price * (1 - totalRate - desiredProfit/100) = baseCosts + fixedFees + shipping (para percentage)
+
+    if (totalRate >= 1) return null; // impossível
+
+    // Iteração: fixedFee e shipping dependem do preço para ML e Shopee
+    let price = 0;
+    const divisor = globalValues.desiredProfitType === 'percentage'
+      ? (1 - totalRate - desiredProfit / 100)
+      : (1 - totalRate);
+
+    if (divisor <= 0) return null;
+
+    // Initial estimate without price-dependent fees
+    const targetVal = globalValues.desiredProfitType === 'currency' ? desiredProfit * quantity : 0;
+    price = (baseCosts + targetVal + config.fixedFee + config.shippingCost) / divisor;
+
+    // Iterate 5 times to converge on price-dependent fees
+    for (let i = 0; i < 5; i++) {
+      let iterFixedFee = config.fixedFee;
+      let iterShipping = config.shippingCost;
+
+      if (config.type === 'mercadolivre') {
+        // Recalculate shipping based on estimated price
+        if (weightKg > 0) {
+          iterShipping = getMLShippingCost(weightKg, price);
+        } else if (price >= 79) {
+          iterShipping = 22.50;
+        } else {
+          iterShipping = 0;
+        }
+        // Full Super fixed fee
+        if (config.isFullSuper && price > 0) {
+          if (price < 30) iterFixedFee = 1;
+          else if (price < 50) iterFixedFee = 2;
+          else if (price < 100) iterFixedFee = 4;
+          else if (price < 199) iterFixedFee = 6;
+          else iterFixedFee = 0;
+        } else {
+          iterFixedFee = 0;
+        }
+      }
+
+      if (config.type === 'shopee') {
+        const fees = getShopeeFees(price, config.shopeeSellerType || 'cnpj', (config.extraOptionValue as string) === 'standard' ? 'standard' : 'free_shipping');
+        const shopeeRate = fees.commissionRate;
+        const newDivisor = globalValues.desiredProfitType === 'percentage'
+          ? (1 - shopeeRate / 100 - taxRate / 100 - config.anticipationFee / 100 - roasFraction - desiredProfit / 100)
+          : (1 - shopeeRate / 100 - taxRate / 100 - config.anticipationFee / 100 - roasFraction);
+        if (newDivisor <= 0) return null;
+        price = (baseCosts + targetVal + fees.fixedFee + iterShipping) / newDivisor;
+        continue;
+      }
+
+      price = (baseCosts + targetVal + iterFixedFee + iterShipping) / divisor;
+    }
+
+    if (!isFinite(price) || price <= 0) return null;
+
+    return Math.ceil(price * 100) / 100; // Arredonda para cima
+  }, [globalValues, config]);
 
   const handleUpdate = (field: keyof MarketplaceConfig, val: number) => onUpdateConfig(config.id, { [field]: val });
 
