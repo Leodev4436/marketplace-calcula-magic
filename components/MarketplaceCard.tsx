@@ -60,7 +60,7 @@ const BRAND_ASSETS: Record<string, { bg: string; logo: string; logoClass: string
   }
 };
 
-export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, globalValues, onUpdateConfig }) => {
+export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, globalValues, onUpdateConfig, onApplyPrice }) => {
   const brand = BRAND_ASSETS[config.type] || BRAND_ASSETS.shopee;
 
   // --- Lógica de Correção Automática (ML) ---
@@ -340,7 +340,7 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
     onUpdateConfig(config.id, updates);
   };
 
-  const showResults = globalValues.sellingPrice > 0 || globalValues.productionCost > 0;
+  const showResults = globalValues.sellingPrice > 0;
   const showSuggestedPrice = suggestedPrice !== null && globalValues.sellingPrice <= 0;
 
   return (
@@ -525,12 +525,24 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
               <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
               <span className="text-xs font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider">Preço Sugerido</span>
             </div>
-            <div className="text-3xl font-black text-indigo-600 dark:text-indigo-400">
-              R$ {suggestedPrice!.toFixed(2)}
+            <div className="flex items-end justify-between gap-3">
+              <div>
+                <div className="text-3xl font-black text-indigo-600 dark:text-indigo-400">
+                  R$ {suggestedPrice!.toFixed(2)}
+                </div>
+                <p className="text-[11px] text-indigo-500 dark:text-indigo-400 mt-1.5">
+                  Preço mínimo para {globalValues.desiredProfitType === 'percentage' ? `${globalValues.desiredProfit}% de margem` : `R$ ${globalValues.desiredProfit.toFixed(2)} de lucro`}
+                </p>
+              </div>
+              {onApplyPrice && (
+                <button
+                  onClick={() => onApplyPrice(suggestedPrice!)}
+                  className="shrink-0 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition-colors shadow-sm"
+                >
+                  Aplicar
+                </button>
+              )}
             </div>
-            <p className="text-[11px] text-indigo-500 dark:text-indigo-400 mt-1.5">
-              Preço mínimo de venda para atingir {globalValues.desiredProfitType === 'percentage' ? `${globalValues.desiredProfit}% de margem` : `R$ ${globalValues.desiredProfit.toFixed(2)} de lucro`}
-            </p>
           </div>
         )}
 
