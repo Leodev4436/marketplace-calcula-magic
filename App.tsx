@@ -105,6 +105,7 @@ function App() {
                   config={mkt} 
                   globalValues={inputs} 
                   onUpdateConfig={handleMarketplaceUpdate}
+                  onApplyPrice={(price) => setInputs(prev => ({ ...prev, sellingPrice: price }))}
                 />
               ))}
             </div>
