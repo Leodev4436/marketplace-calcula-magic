@@ -341,7 +341,7 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
   };
 
   const showResults = globalValues.sellingPrice > 0;
-  const showSuggestedPrice = suggestedPrice !== null && globalValues.sellingPrice <= 0;
+  const showSuggestedPrice = suggestedPrice !== null && !(globalValues.sellingPrice > 0);
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col hover:shadow-md transition-shadow duration-200 h-full">
