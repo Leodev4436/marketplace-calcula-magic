@@ -1,5 +1,5 @@
 import React from 'react';
-import { Package, Megaphone, Info, TrendingDown, Weight } from 'lucide-react';
+import { Package, Megaphone, Info, TrendingDown, Weight, Users } from 'lucide-react';
 import { GlobalInputs } from '../types';
 
 interface InputSectionProps {
@@ -127,8 +127,8 @@ export const InputSection: React.FC<InputSectionProps> = ({ values, onChange, on
           </div>
         </div>
 
-        {/* Row 3: Lucro Desejado & ROAS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+        {/* Row 3: Lucro Desejado & Comissão Afiliado & ROAS */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
             
             {/* Lucro Desejado */}
             <div>
@@ -156,6 +156,26 @@ export const InputSection: React.FC<InputSectionProps> = ({ values, onChange, on
                      R$
                    </button>
                 </div>
+               </div>
+            </div>
+
+            {/* Comissão Afiliado */}
+            <div>
+               <label className="block text-sm text-slate-500 mb-1.5 flex items-center gap-1">
+                 <Users className="w-3.5 h-3.5" />
+                 Comissão Afiliado
+               </label>
+               <div className="relative h-[46px]">
+                 <input
+                   type="number"
+                   min="0"
+                   max="100"
+                   value={values.affiliateCommission || ''}
+                   onChange={(e) => handleChange('affiliateCommission', parseFloat(e.target.value))}
+                   className="w-full pl-3 pr-8 py-2 h-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-base focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 dark:text-white"
+                   placeholder="0"
+                 />
+                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 text-base pointer-events-none">%</span>
                </div>
             </div>
 

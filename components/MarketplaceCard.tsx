@@ -610,6 +610,18 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
                     <span className="text-red-600 dark:text-red-400 font-semibold">- R$ {breakdown.anticipation.toFixed(2)}</span>
                   </div>
                   )}
+                  {/* Comissão Afiliado */}
+                  {breakdown.affiliate > 0 && (
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1">
+                        Comissão Afiliado
+                        <span className="text-xs bg-purple-50 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 px-1 rounded">
+                            {breakdown.affiliatePercent.toFixed(1)}%
+                        </span>
+                    </span>
+                    <span className="text-red-600 dark:text-red-400 font-semibold">- R$ {breakdown.affiliate.toFixed(2)}</span>
+                  </div>
+                  )}
                   {/* Shopee Pix Subsidy Info */}
                   {config.type === 'shopee' && config.shopeePixSubsidy && (() => {
                     const price = safe(globalValues.sellingPrice);
