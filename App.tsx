@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Moon, Sun, LayoutGrid } from 'lucide-react';
+import { Moon, Sun, LayoutGrid, ArrowUp } from 'lucide-react';
 import { GlobalInputs, MarketplaceConfig, HistoryItem } from './types';
 import { INITIAL_INPUTS, DEFAULT_MARKETPLACES } from './constants';
 import { InputSection } from './components/InputSection';
@@ -128,6 +128,15 @@ function App() {
         />
 
       </div>
+
+      {/* Botão Voltar ao Topo */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className="fixed bottom-6 right-6 z-50 bg-indigo-600 hover:bg-indigo-700 text-white p-3 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95"
+        aria-label="Voltar ao topo"
+      >
+        <ArrowUp className="w-5 h-5" />
+      </button>
     </div>
   );
 }
