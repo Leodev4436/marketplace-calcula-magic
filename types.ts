@@ -11,6 +11,8 @@ export interface GlobalInputs {
   roasValue: number;
   // Peso do produto
   productWeight: number; // gramas
+  // Comissão Afiliado
+  affiliateCommission: number; // percentage deducted from revenue
 }
 
 export type MarketplaceType = 'mercadolivre' | 'shopee' | 'amazon' | 'shein' | 'magalu' | 'tiktok';
