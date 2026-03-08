@@ -147,6 +147,8 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
     const totalRevenue = sellingPrice * quantity;
     const totalBaseCost = (productionCost + packagingCost) * quantity;
     const taxValue = (totalRevenue * taxRate) / 100;
+    const affiliateCommission = safe(globalValues.affiliateCommission);
+    const affiliateCost = (totalRevenue * affiliateCommission) / 100;
     
     // Comissão bruta
     let grossCommission = (totalRevenue * commissionRate / 100) + fixedFee;
@@ -162,8 +164,8 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
     const totalMarketplaceFees = grossCommission + shippingCost + (totalRevenue * anticipationFee / 100);
     const totalMarketingCost = marketingCost * quantity;
     
-    // Profit = Revenue - (Base Costs + Tax + Fees + Marketing)
-    const realProfit = totalRevenue - (totalBaseCost + taxValue + totalMarketplaceFees + totalMarketingCost);
+    // Profit = Revenue - (Base Costs + Tax + Fees + Marketing + Affiliate)
+    const realProfit = totalRevenue - (totalBaseCost + taxValue + totalMarketplaceFees + totalMarketingCost + affiliateCost);
     
     const profitMargin = totalRevenue > 0 ? (realProfit / totalRevenue) * 100 : 0;
     const roi = totalBaseCost > 0 ? (realProfit / totalBaseCost) * 100 : 0;
@@ -197,6 +199,7 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
     const marketing = (enableRoas && roasValue > 0) ? (sellingPrice / roasValue) : 0;
     const marketingPercent = (enableRoas && roasValue > 0) ? (1 / roasValue) * 100 : 0;
 
+    const affiliateCommission = safe(globalValues.affiliateCommission);
     const totalRevenue = sellingPrice * quantity;
     return {
         commission: (totalRevenue * config.commissionRate) / 100,
@@ -206,7 +209,9 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
         shipping: config.shippingCost,
         anticipation: (totalRevenue * config.anticipationFee) / 100,
         marketing: marketing * quantity,
-        marketingPercent: marketingPercent
+        marketingPercent: marketingPercent,
+        affiliate: (totalRevenue * affiliateCommission) / 100,
+        affiliatePercent: affiliateCommission
     };
   }, [globalValues, config]);
 
@@ -249,8 +254,9 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
 
     const baseCosts = (productionCost + packagingCost) * quantity;
     
-    // Taxa percentual total (comissão + imposto + antecipação + marketing)
-    const rateSum = config.commissionRate + taxRate + config.anticipationFee;
+    // Taxa percentual total (comissão + imposto + antecipação + marketing + afiliado)
+    const affiliateCommission = safe(globalValues.affiliateCommission);
+    const rateSum = config.commissionRate + taxRate + config.anticipationFee + affiliateCommission;
     const roasFraction = (enableRoas && roasValue > 0) ? (1 / roasValue) : 0;
     const totalRate = rateSum / 100 + roasFraction;
 
