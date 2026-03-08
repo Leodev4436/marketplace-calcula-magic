@@ -308,8 +308,8 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
         const fees = getShopeeFees(price, config.shopeeSellerType || 'cnpj', (config.extraOptionValue as string) === 'standard' ? 'standard' : 'free_shipping');
         const shopeeRate = fees.commissionRate;
         const newDivisor = globalValues.desiredProfitType === 'percentage'
-          ? (1 - shopeeRate / 100 - taxRate / 100 - config.anticipationFee / 100 - roasFraction - desiredProfit / 100)
-          : (1 - shopeeRate / 100 - taxRate / 100 - config.anticipationFee / 100 - roasFraction);
+          ? (1 - shopeeRate / 100 - taxRate / 100 - config.anticipationFee / 100 - affiliateCommission / 100 - roasFraction - desiredProfit / 100)
+          : (1 - shopeeRate / 100 - taxRate / 100 - config.anticipationFee / 100 - affiliateCommission / 100 - roasFraction);
         if (newDivisor <= 0) return null;
         price = (baseCosts + targetVal + fees.fixedFee + iterShipping) / newDivisor;
         continue;
