@@ -238,7 +238,7 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
   }, [globalValues, results.realProfit]);
 
   // --- Preço Sugerido (quando não há preço de venda mas há meta de lucro) ---
-  const suggestedPrice = useMemo(() => {
+  const suggestedPriceData = useMemo(() => {
     const sellingPrice = safe(globalValues.sellingPrice);
     const desiredProfit = safe(globalValues.desiredProfit);
     const productionCost = safe(globalValues.productionCost);
@@ -260,13 +260,8 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
     const roasFraction = (enableRoas && roasValue > 0) ? (1 / roasValue) : 0;
     const totalRate = rateSum / 100 + roasFraction;
 
-    // Preço precisa cobrir: baseCosts + targetProfit + fixedFees + shipping
-    // price * (1 - totalRate) = baseCosts + targetProfit + fixedFees + shipping (para currency)
-    // price * (1 - totalRate - desiredProfit/100) = baseCosts + fixedFees + shipping (para percentage)
+    if (totalRate >= 1) return null;
 
-    if (totalRate >= 1) return null; // impossível
-
-    // Iteração: fixedFee e shipping dependem do preço para ML e Shopee
     let price = 0;
     const divisor = globalValues.desiredProfitType === 'percentage'
       ? (1 - totalRate - desiredProfit / 100)
@@ -274,9 +269,12 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
 
     if (divisor <= 0) return null;
 
-    // Initial estimate without price-dependent fees
     const targetVal = globalValues.desiredProfitType === 'currency' ? desiredProfit * quantity : 0;
     price = (baseCosts + targetVal + config.fixedFee + config.shippingCost) / divisor;
+
+    let effectiveCommissionRate = config.commissionRate;
+    let effectiveFixedFee = config.fixedFee;
+    let effectiveShipping = config.shippingCost;
 
     // Iterate 5 times to converge on price-dependent fees
     for (let i = 0; i < 5; i++) {
@@ -284,7 +282,6 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
       let iterShipping = config.shippingCost;
 
       if (config.type === 'mercadolivre') {
-        // Recalculate shipping based on estimated price
         if (weightKg > 0) {
           iterShipping = getMLShippingCost(weightKg, price);
         } else if (price >= 79) {
@@ -292,7 +289,6 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
         } else {
           iterShipping = 0;
         }
-        // Full Super fixed fee
         if (config.isFullSuper && price > 0) {
           if (price < 30) iterFixedFee = 1;
           else if (price < 50) iterFixedFee = 2;
@@ -302,10 +298,14 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
         } else {
           iterFixedFee = 0;
         }
+        effectiveFixedFee = iterFixedFee;
+        effectiveShipping = iterShipping;
       }
 
       if (config.type === 'shopee') {
         const fees = getShopeeFees(price, config.shopeeSellerType || 'cnpj', (config.extraOptionValue as string) === 'standard' ? 'standard' : 'free_shipping');
+        effectiveCommissionRate = fees.commissionRate;
+        effectiveFixedFee = fees.fixedFee;
         const shopeeRate = fees.commissionRate;
         const newDivisor = globalValues.desiredProfitType === 'percentage'
           ? (1 - shopeeRate / 100 - taxRate / 100 - config.anticipationFee / 100 - affiliateCommission / 100 - roasFraction - desiredProfit / 100)
@@ -320,8 +320,33 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
 
     if (!isFinite(price) || price <= 0) return null;
 
-    return Math.ceil(price * 100) / 100; // Arredonda para cima
+    return {
+      price: Math.ceil(price * 100) / 100,
+      effectiveCommissionRate,
+      effectiveFixedFee,
+      effectiveShipping,
+    };
   }, [globalValues, config]);
+
+  const suggestedPrice = suggestedPriceData?.price ?? null;
+
+  // Sync displayed fees to match suggested price when no selling price is set
+  useEffect(() => {
+    if (!suggestedPriceData || globalValues.sellingPrice > 0) return;
+    const updates: Partial<MarketplaceConfig> = {};
+    if (config.commissionRate !== suggestedPriceData.effectiveCommissionRate) {
+      updates.commissionRate = suggestedPriceData.effectiveCommissionRate;
+    }
+    if (config.fixedFee !== suggestedPriceData.effectiveFixedFee) {
+      updates.fixedFee = suggestedPriceData.effectiveFixedFee;
+    }
+    if (config.type === 'mercadolivre' && config.shippingCost !== suggestedPriceData.effectiveShipping) {
+      updates.shippingCost = suggestedPriceData.effectiveShipping;
+    }
+    if (Object.keys(updates).length > 0) {
+      onUpdateConfig(config.id, updates);
+    }
+  }, [suggestedPriceData, globalValues.sellingPrice, config.id, config.type, config.commissionRate, config.fixedFee, config.shippingCost, onUpdateConfig]);
 
   const handleUpdate = (field: keyof MarketplaceConfig, val: number) => onUpdateConfig(config.id, { [field]: val });
 
