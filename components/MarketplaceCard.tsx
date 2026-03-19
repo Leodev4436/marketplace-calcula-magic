@@ -92,15 +92,11 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
       }
 
       // Auto-calcular frete baseado no peso e preço
-      if (weight > 0) {
-        const mlShipping = getMLShippingCost(weight, price);
-        if (config.shippingCost !== mlShipping) {
-          onUpdateConfig(config.id, { shippingCost: mlShipping });
-        }
-      } else {
-        if (price >= 79 && config.shippingCost === 0) {
-          onUpdateConfig(config.id, { shippingCost: 22.50 });
-        }
+      // Se não informou peso, usar 300g como padrão
+      const effectiveWeight = weight > 0 ? weight : 0.3;
+      const mlShipping = getMLShippingCost(effectiveWeight, price);
+      if (config.shippingCost !== mlShipping) {
+        onUpdateConfig(config.id, { shippingCost: mlShipping });
       }
     }
   }, [globalValues.sellingPrice, globalValues.productWeight, config.type, config.shippingCost, config.id, config.isFullSuper, config.fixedFee, onUpdateConfig]);
