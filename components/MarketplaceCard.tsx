@@ -491,6 +491,16 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
           </div>
         )}
 
+        {/* Aviso peso padrão ML */}
+        {config.type === 'mercadolivre' && safe(globalValues.productWeight) <= 0 && (
+          <div className="flex items-start gap-2 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-2.5">
+            <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+            <span className="text-[11px] text-blue-700 dark:text-blue-300">
+              Peso não informado. Utilizando peso padrão de <strong>até 300g</strong> para cálculo do frete.
+            </span>
+          </div>
+        )}
+
         {/* 3. Toggle Supermercado (Full Super) - SOMENTE MERCADO LIVRE */}
         {config.type === 'mercadolivre' && (
           <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800 transition-colors">
