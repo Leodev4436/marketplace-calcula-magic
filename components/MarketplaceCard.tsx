@@ -23,8 +23,8 @@ const BRAND_ASSETS: Record<string, { bg: string; logo: string; logoClass: string
   shopee: {
     bg: 'bg-[#EE4D2D]', // Laranja Shopee
     // Logo Shopee (Wikimedia)
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Shopee.svg/2560px-Shopee.svg.png',
-    logoClass: 'h-8 object-contain brightness-0 invert', // Filtro para Branco
+    logo: 'https://logo.clearbit.com/shopee.com.br',
+    logoClass: 'h-8 object-contain brightness-0 invert',
     textClass: 'text-white'
   },
   amazon: {
@@ -92,15 +92,11 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
       }
 
       // Auto-calcular frete baseado no peso e preço
-      if (weight > 0) {
-        const mlShipping = getMLShippingCost(weight, price);
-        if (config.shippingCost !== mlShipping) {
-          onUpdateConfig(config.id, { shippingCost: mlShipping });
-        }
-      } else {
-        if (price >= 79 && config.shippingCost === 0) {
-          onUpdateConfig(config.id, { shippingCost: 22.50 });
-        }
+      // Se não informou peso, usar 300g como padrão
+      const effectiveWeight = weight > 0 ? weight : 0.3;
+      const mlShipping = getMLShippingCost(effectiveWeight, price);
+      if (config.shippingCost !== mlShipping) {
+        onUpdateConfig(config.id, { shippingCost: mlShipping });
       }
     }
   }, [globalValues.sellingPrice, globalValues.productWeight, config.type, config.shippingCost, config.id, config.isFullSuper, config.fixedFee, onUpdateConfig]);
@@ -281,14 +277,9 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
       let iterFixedFee = config.fixedFee;
       let iterShipping = config.shippingCost;
 
-      if (config.type === 'mercadolivre') {
-        if (weightKg > 0) {
-          iterShipping = getMLShippingCost(weightKg, price);
-        } else if (price >= 79) {
-          iterShipping = 22.50;
-        } else {
-          iterShipping = 0;
-        }
+        if (config.type === 'mercadolivre') {
+        const effectiveWeightKg = weightKg > 0 ? weightKg : 0.3;
+        iterShipping = getMLShippingCost(effectiveWeightKg, price);
         if (config.isFullSuper && price > 0) {
           if (price < 30) iterFixedFee = 1;
           else if (price < 50) iterFixedFee = 2;
@@ -497,6 +488,16 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
                 </div>
               );
             })()}
+          </div>
+        )}
+
+        {/* Aviso peso padrão ML */}
+        {config.type === 'mercadolivre' && safe(globalValues.productWeight) <= 0 && (
+          <div className="flex items-start gap-2 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-2.5">
+            <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+            <span className="text-[11px] text-blue-700 dark:text-blue-300">
+              Peso não informado. Utilizando peso padrão de <strong>até 300g</strong> para cálculo do frete.
+            </span>
           </div>
         )}
 
