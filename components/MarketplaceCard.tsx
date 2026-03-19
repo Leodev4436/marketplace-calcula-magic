@@ -23,7 +23,7 @@ const BRAND_ASSETS: Record<string, { bg: string; logo: string; logoClass: string
   shopee: {
     bg: 'bg-[#EE4D2D]', // Laranja Shopee
     // Logo Shopee (Wikimedia)
-    logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMz2iwcnmsCKai4WsZY-zNgZUZrHR6WL32AX4JRh3P0dP_lj3ysG2OqsfG&s=10',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fe/Shopee.svg',
     logoClass: 'h-8 object-contain brightness-0 invert',
     textClass: 'text-white'
   },
