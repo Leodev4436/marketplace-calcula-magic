@@ -69,23 +69,24 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
       const rawPrice = globalValues.sellingPrice;
       const price = isNaN(rawPrice) ? 0 : rawPrice;
       const weightGrams = isNaN(globalValues.productWeight) ? 0 : globalValues.productWeight;
-      const weight = weightGrams / 1000; // converter gramas para kg para lookup na tabela
+      const weight = weightGrams / 1000;
+      
+      // Quando não há preço de venda, o suggestedPriceData useEffect gerencia as taxas
+      // Não interferir aqui para evitar loop de oscilação
+      if (price <= 0) return;
       
       // Lógica "Full Super" (Supermercado)
       if (config.isFullSuper) {
           let superFee = 0;
-          if (price > 0) {
-            if (price < 30) superFee = 1.00;
-            else if (price < 50) superFee = 2.00;
-            else if (price < 100) superFee = 4.00;
-            else if (price < 199) superFee = 6.00;
-            else superFee = 0;
-          }
+          if (price < 30) superFee = 1.00;
+          else if (price < 50) superFee = 2.00;
+          else if (price < 100) superFee = 4.00;
+          else if (price < 199) superFee = 6.00;
+          else superFee = 0;
           if (config.fixedFee !== superFee) {
               onUpdateConfig(config.id, { fixedFee: superFee });
           }
       } 
-      // Lógica Padrão (Sem Full Super) — sem taxa fixa, custo operacional já incluso na tabela de frete
       else {
           if (config.fixedFee !== 0) onUpdateConfig(config.id, { fixedFee: 0 });
       }
@@ -97,7 +98,6 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
           onUpdateConfig(config.id, { shippingCost: mlShipping });
         }
       } else {
-        // Sem peso: lógica antiga (22.50 para >= 79, senão 0)
         if (price >= 79 && config.shippingCost === 0) {
           onUpdateConfig(config.id, { shippingCost: 22.50 });
         }
