@@ -277,14 +277,9 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
       let iterFixedFee = config.fixedFee;
       let iterShipping = config.shippingCost;
 
-      if (config.type === 'mercadolivre') {
-        if (weightKg > 0) {
-          iterShipping = getMLShippingCost(weightKg, price);
-        } else if (price >= 79) {
-          iterShipping = 22.50;
-        } else {
-          iterShipping = 0;
-        }
+        if (config.type === 'mercadolivre') {
+        const effectiveWeightKg = weightKg > 0 ? weightKg : 0.3;
+        iterShipping = getMLShippingCost(effectiveWeightKg, price);
         if (config.isFullSuper && price > 0) {
           if (price < 30) iterFixedFee = 1;
           else if (price < 50) iterFixedFee = 2;
