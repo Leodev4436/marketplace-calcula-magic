@@ -23,8 +23,8 @@ const BRAND_ASSETS: Record<string, { bg: string; logo: string; logoClass: string
   shopee: {
     bg: 'bg-[#EE4D2D]', // Laranja Shopee
     // Logo Shopee (Wikimedia)
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Shopee.svg/2560px-Shopee.svg.png',
-    logoClass: 'h-8 object-contain brightness-0 invert', // Filtro para Branco
+    logo: 'https://logo.clearbit.com/shopee.com.br',
+    logoClass: 'h-8 object-contain brightness-0 invert',
     textClass: 'text-white'
   },
   amazon: {
