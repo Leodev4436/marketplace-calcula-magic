@@ -257,7 +257,10 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
     
     // Taxa percentual total (comissão + imposto + antecipação + marketing + afiliado)
     const affiliateCommission = safe(globalValues.affiliateCommission);
-    const rateSum = config.commissionRate + taxRate + config.anticipationFee + affiliateCommission;
+    // Para Shopee, usar taxa padrão estável (20%) para o seed inicial, evitando ciclo de dependência com config
+    const seedCommissionRate = config.type === 'shopee' ? 20 : config.commissionRate;
+    const seedFixedFee = config.type === 'shopee' ? 4 : config.fixedFee;
+    const rateSum = seedCommissionRate + taxRate + config.anticipationFee + affiliateCommission;
     const roasFraction = (enableRoas && roasValue > 0) ? (1 / roasValue) : 0;
     const totalRate = rateSum / 100 + roasFraction;
 
@@ -271,10 +274,10 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
     if (divisor <= 0) return null;
 
     const targetVal = globalValues.desiredProfitType === 'currency' ? desiredProfit * quantity : 0;
-    price = (baseCosts + targetVal + config.fixedFee + config.shippingCost) / divisor;
+    price = (baseCosts + targetVal + seedFixedFee + config.shippingCost) / divisor;
 
-    let effectiveCommissionRate = config.commissionRate;
-    let effectiveFixedFee = config.fixedFee;
+    let effectiveCommissionRate = seedCommissionRate;
+    let effectiveFixedFee = seedFixedFee;
     let effectiveShipping = config.shippingCost;
 
     // Iterate 5 times to converge on price-dependent fees
