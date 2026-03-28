@@ -330,18 +330,20 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
   const suggestedPrice = suggestedPriceData?.price ?? null;
 
   // Sync displayed fees to match suggested price when no selling price is set
+  // Sync displayed fees to match suggested price — use ref to avoid oscillation loop
+  const lastSyncedRef = React.useRef<{ commission: number; fixed: number; shipping: number } | null>(null);
   useEffect(() => {
     if (!suggestedPriceData || globalValues.sellingPrice > 0) return;
+    const { effectiveCommissionRate, effectiveFixedFee, effectiveShipping } = suggestedPriceData;
+    const last = lastSyncedRef.current;
+    if (last && last.commission === effectiveCommissionRate && last.fixed === effectiveFixedFee && last.shipping === effectiveShipping) {
+      return; // Already synced these exact values
+    }
+    lastSyncedRef.current = { commission: effectiveCommissionRate, fixed: effectiveFixedFee, shipping: effectiveShipping };
     const updates: Partial<MarketplaceConfig> = {};
-    if (config.commissionRate !== suggestedPriceData.effectiveCommissionRate) {
-      updates.commissionRate = suggestedPriceData.effectiveCommissionRate;
-    }
-    if (config.fixedFee !== suggestedPriceData.effectiveFixedFee) {
-      updates.fixedFee = suggestedPriceData.effectiveFixedFee;
-    }
-    if (config.type === 'mercadolivre' && config.shippingCost !== suggestedPriceData.effectiveShipping) {
-      updates.shippingCost = suggestedPriceData.effectiveShipping;
-    }
+    if (config.commissionRate !== effectiveCommissionRate) updates.commissionRate = effectiveCommissionRate;
+    if (config.fixedFee !== effectiveFixedFee) updates.fixedFee = effectiveFixedFee;
+    if (config.type === 'mercadolivre' && config.shippingCost !== effectiveShipping) updates.shippingCost = effectiveShipping;
     if (Object.keys(updates).length > 0) {
       onUpdateConfig(config.id, updates);
     }
