@@ -105,6 +105,11 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
   useEffect(() => {
     if (config.type !== 'shopee') return;
     const price = isNaN(globalValues.sellingPrice) ? 0 : globalValues.sellingPrice;
+    
+    // Quando não há preço de venda, o suggestedPriceData useEffect gerencia as taxas
+    // Não interferir aqui para evitar loop de oscilação
+    if (price <= 0) return;
+    
     const sellerType = config.shopeeSellerType || 'cnpj';
     const mode = (config.extraOptionValue as string) === 'standard' ? 'standard' : 'free_shipping';
     
