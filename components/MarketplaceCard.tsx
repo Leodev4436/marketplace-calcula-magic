@@ -124,6 +124,21 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
     }
   }, [globalValues.sellingPrice, config.type, config.shopeeSellerType, config.extraOptionValue, config.id, onUpdateConfig]);
 
+  // --- Lógica de Auto-Cálculo TikTok (comissão e taxa fixa variam por faixa de preço) ---
+  useEffect(() => {
+    if (config.type !== 'tiktok') return;
+    const price = isNaN(globalValues.sellingPrice) ? 0 : globalValues.sellingPrice;
+    if (price <= 0) return;
+    const mode = (config.extraOptionValue as string) || 'standard';
+    const baseCommission = price < 50 ? 10 : 6;
+    const baseFixedFee = price < 50 ? 4 : 6;
+    const commissionRate = mode === 'standard' ? baseCommission : baseCommission + 1;
+    const updates: Partial<MarketplaceConfig> = {};
+    if (config.commissionRate !== commissionRate) updates.commissionRate = commissionRate;
+    if (config.fixedFee !== baseFixedFee) updates.fixedFee = baseFixedFee;
+    if (Object.keys(updates).length > 0) onUpdateConfig(config.id, updates);
+  }, [globalValues.sellingPrice, config.type, config.extraOptionValue, config.id, onUpdateConfig]);
+
   // Helper safe number
   const safe = (val: number) => isNaN(val) ? 0 : val;
 
