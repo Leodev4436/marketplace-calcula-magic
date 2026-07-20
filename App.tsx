@@ -96,7 +96,7 @@ function App() {
           {/* Grid de Cards */}
           <div>
             <div className="mb-6">
-               <span className="text-xs text-slate-400 dark:text-slate-500 font-medium block mb-1">Atualizado em 08/03/2026</span>
+               <span className="text-xs text-slate-400 dark:text-slate-500 font-medium block mb-1">Atualizado em 20/07/2026</span>
                <h3 className="text-xl font-bold text-slate-800 dark:text-white">Simulação por Marketplace</h3>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
