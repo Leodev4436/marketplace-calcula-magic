@@ -365,8 +365,13 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
         // Amazon fees updates
         updates.fixedFee = mode === 'dba' ? 5.50 : 8.50;
     } else if (config.type === 'tiktok') {
-        // Standard: 12% | Affiliate: 13%
-        updates.commissionRate = mode === 'standard' ? 12 : 13;
+        // TikTok: comissão e taxa fixa variam por faixa de preço
+        // Abaixo de R$50: 10% + R$4 | Acima/igual R$50: 6% + R$6
+        // Affiliate adiciona 1% sobre a comissão padrão
+        const baseCommission = safe(globalValues.sellingPrice) < 50 ? 10 : 6;
+        const baseFixedFee = safe(globalValues.sellingPrice) < 50 ? 4 : 6;
+        updates.commissionRate = mode === 'standard' ? baseCommission : baseCommission + 1;
+        updates.fixedFee = baseFixedFee;
     }
     
     onUpdateConfig(config.id, updates);
