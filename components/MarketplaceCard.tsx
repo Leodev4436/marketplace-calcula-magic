@@ -329,6 +329,21 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
         continue;
       }
 
+      if (config.type === 'tiktok') {
+        const mode = (config.extraOptionValue as string) || 'standard';
+        const baseCommission = price < 50 ? 10 : 6;
+        const baseFixedFee = price < 50 ? 4 : 6;
+        const tkCommission = mode === 'standard' ? baseCommission : baseCommission + 1;
+        effectiveCommissionRate = tkCommission;
+        effectiveFixedFee = baseFixedFee;
+        const newDivisor = globalValues.desiredProfitType === 'percentage'
+          ? (1 - tkCommission / 100 - taxRate / 100 - config.anticipationFee / 100 - affiliateCommission / 100 - roasFraction - desiredProfit / 100)
+          : (1 - tkCommission / 100 - taxRate / 100 - config.anticipationFee / 100 - affiliateCommission / 100 - roasFraction);
+        if (newDivisor <= 0) return null;
+        price = (baseCosts + targetVal + baseFixedFee + iterShipping) / newDivisor;
+        continue;
+      }
+
       price = (baseCosts + targetVal + iterFixedFee + iterShipping) / divisor;
     }
 
