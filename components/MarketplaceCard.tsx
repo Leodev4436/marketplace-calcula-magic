@@ -129,15 +129,13 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
     if (config.type !== 'tiktok') return;
     const price = isNaN(globalValues.sellingPrice) ? 0 : globalValues.sellingPrice;
     if (price <= 0) return;
-    const mode = (config.extraOptionValue as string) || 'standard';
-    const baseCommission = price < 50 ? 10 : 6;
+    const commissionRate = price < 50 ? 16 : 12;
     const baseFixedFee = price < 50 ? 4 : 6;
-    const commissionRate = mode === 'standard' ? baseCommission : baseCommission + 1;
     const updates: Partial<MarketplaceConfig> = {};
     if (config.commissionRate !== commissionRate) updates.commissionRate = commissionRate;
     if (config.fixedFee !== baseFixedFee) updates.fixedFee = baseFixedFee;
     if (Object.keys(updates).length > 0) onUpdateConfig(config.id, updates);
-  }, [globalValues.sellingPrice, config.type, config.extraOptionValue, config.id, onUpdateConfig]);
+  }, [globalValues.sellingPrice, config.type, config.id, onUpdateConfig]);
 
   // Helper safe number
   const safe = (val: number) => isNaN(val) ? 0 : val;
@@ -330,10 +328,8 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
       }
 
       if (config.type === 'tiktok') {
-        const mode = (config.extraOptionValue as string) || 'standard';
-        const baseCommission = price < 50 ? 10 : 6;
+        const tkCommission = price < 50 ? 16 : 12;
         const baseFixedFee = price < 50 ? 4 : 6;
-        const tkCommission = mode === 'standard' ? baseCommission : baseCommission + 1;
         effectiveCommissionRate = tkCommission;
         effectiveFixedFee = baseFixedFee;
         const newDivisor = globalValues.desiredProfitType === 'percentage'
@@ -394,14 +390,6 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
     } else if (config.type === 'amazon') {
         // Amazon fees updates
         updates.fixedFee = mode === 'dba' ? 5.50 : 8.50;
-    } else if (config.type === 'tiktok') {
-        // TikTok: comissão e taxa fixa variam por faixa de preço
-        // Abaixo de R$50: 10% + R$4 | Acima/igual R$50: 6% + R$6
-        // Affiliate adiciona 1% sobre a comissão padrão
-        const baseCommission = safe(globalValues.sellingPrice) < 50 ? 10 : 6;
-        const baseFixedFee = safe(globalValues.sellingPrice) < 50 ? 4 : 6;
-        updates.commissionRate = mode === 'standard' ? baseCommission : baseCommission + 1;
-        updates.fixedFee = baseFixedFee;
     }
     
     onUpdateConfig(config.id, updates);
@@ -438,10 +426,7 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
              {config.type === 'shopee' && ['standard', 'free_shipping'].map(mode => (
                <button key={mode} onClick={() => handleModeSwitch(mode)} className={`flex-1 py-1.5 text-xs font-bold uppercase rounded-md transition-all ${config.extraOptionValue === mode ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white' : 'text-slate-400 hover:text-slate-600'}`}>{mode === 'free_shipping' ? 'Frete Grátis' : 'Padrão'}</button>
              ))}
-             {config.type === 'tiktok' && ['standard', 'affiliate'].map(mode => (
-               <button key={mode} onClick={() => handleModeSwitch(mode)} className={`flex-1 py-1.5 text-xs font-bold uppercase rounded-md transition-all ${config.extraOptionValue === mode ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white' : 'text-slate-400 hover:text-slate-600'}`}>{mode === 'affiliate' ? 'Afiliado' : 'Padrão'}</button>
-             ))}
-             {config.type === 'amazon' && ['dba', 'fba'].map(mode => (
+              {config.type === 'amazon' && ['dba', 'fba'].map(mode => (
                 <button key={mode} onClick={() => handleModeSwitch(mode)} className={`flex-1 py-1.5 text-xs font-bold uppercase rounded-md transition-all ${config.extraOptionValue === mode ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white' : 'text-slate-400 hover:text-slate-600'}`}>{mode.toUpperCase()}</button>
               ))}
           </div>
