@@ -40,7 +40,6 @@ export const DEFAULT_MARKETPLACES: MarketplaceConfig[] = [
     extraOption: 'program',
     extraOptionValue: 'free_shipping', // 'standard' or 'free_shipping'
     shopeeSellerType: 'cnpj',
-    shopeePixSubsidy: false,
   },
   {
     id: 'amazon',

@@ -8,19 +8,17 @@ export interface ShopeeFeeResult {
   commissionRate: number; // % (20% até R$79,99 ou 14% demais)
   fixedFee: number;       // R$ (taxa fixa por faixa, já inclui cpfExtra se aplicável)
   cpfExtra: number;       // R$ 3 extra para CPF >450 pedidos
-  pixSubsidyRate: number; // % subsídio Pix (0, 5 ou 8)
-  pixSubsidyValue: number; // R$ valor do subsídio Pix
 }
 
 /**
  * Calcula as taxas da Shopee com base no preço de venda e tipo de vendedor.
  * 
- * Faixas CNPJ/CPF (comissão sempre 14%):
- * - Até R$79,99: 14% + R$4 | Pix: sem
- * - R$80-R$99,99: 14% + R$12 | Pix: 5%
- * - R$100-R$199,99: 14% + R$20 | Pix: 5%
- * - R$200-R$499,99: 14% + R$24 | Pix: 5%
- * - Acima R$500: 14% + R$26 | Pix: 8%
+ * Faixas CNPJ/CPF:
+ * - Até R$79,99: 20% + R$4
+ * - R$80-R$99,99: 14% + R$16
+ * - R$100-R$199,99: 14% + R$20
+ * - R$200-R$499,99: 14% + R$26
+ * - Acima R$500: 14% + R$26
  * 
  * CPF: +R$3 por item (se >450 pedidos/90 dias)
  * 
@@ -39,28 +37,22 @@ export function getShopeeFees(
   // Comissão percentual: 20% até R$79,99, 14% nas demais faixas
   let commissionRate: number;
   let fixedFee: number;
-  let pixSubsidyRate: number;
 
   if (price <= 79.99) {
     commissionRate = 20;
     fixedFee = 4;
-    pixSubsidyRate = 0;
   } else if (price <= 99.99) {
     commissionRate = 14;
     fixedFee = 16;
-    pixSubsidyRate = 5;
   } else if (price <= 199.99) {
     commissionRate = 14;
     fixedFee = 20;
-    pixSubsidyRate = 5;
   } else if (price <= 499.99) {
     commissionRate = 14;
     fixedFee = 26;
-    pixSubsidyRate = 5;
   } else {
     commissionRate = 14;
     fixedFee = 26;
-    pixSubsidyRate = 8;
   }
 
   // Regra regressiva para itens muito baratos
@@ -84,16 +76,9 @@ export function getShopeeFees(
   // CPF extra: R$3 por item (para vendedores CPF com > 450 pedidos/90 dias)
   const cpfExtra = sellerType === 'cpf' ? 3 : 0;
 
-  // Subsídio Pix: desconto é X% sobre a comissão (não sobre o preço)
-  // Ex: 5% de 14% = 0,70% de desconto real sobre o preço
-  const effectiveDiscountRate = (commissionRate * pixSubsidyRate) / 100; // ex: 14*5/100 = 0.70
-  const pixSubsidyValue = price > 0 ? (price * effectiveDiscountRate) / 100 : 0;
-
   return {
     commissionRate,
     fixedFee: fixedFee + cpfExtra,
     cpfExtra,
-    pixSubsidyRate,
-    pixSubsidyValue,
   };
 }

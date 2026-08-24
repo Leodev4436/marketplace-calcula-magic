@@ -167,14 +167,6 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
     // Comissão bruta
     let grossCommission = (totalRevenue * commissionRate / 100) + fixedFee;
     
-    // Subsídio Pix: NÃO altera lucro do vendedor (é absorvido pela plataforma)
-    // Mantido apenas para exibição informativa
-    let pixSubsidyDiscount = 0;
-    if (config.type === 'shopee' && config.shopeePixSubsidy) {
-      const fees = getShopeeFees(sellingPrice, config.shopeeSellerType || 'cnpj', 'standard');
-      pixSubsidyDiscount = fees.pixSubsidyValue * quantity;
-    }
-    
     const totalMarketplaceFees = grossCommission + shippingCost + (totalRevenue * anticipationFee / 100);
     const totalMarketingCost = marketingCost * quantity;
     
@@ -461,63 +453,6 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
                 </span>
               </div>
             )}
-
-            {/* Pix Subsidy Toggle */}
-            {(() => {
-              const currentPrice = safe(globalValues.sellingPrice);
-              const pixAvailable = currentPrice >= 80;
-              const pixBlocked = !pixAvailable && currentPrice > 0;
-              return (
-                <div className="space-y-2">
-                  <div className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${
-                    pixBlocked 
-                      ? 'bg-slate-100 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 opacity-70' 
-                      : 'bg-slate-50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-800'
-                  }`}>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-sm font-medium ${pixBlocked ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-300'}`}>Subsídio Pix</span>
-                      <div className="group relative">
-                        <Info className={`w-4 h-4 cursor-help ${pixBlocked ? 'text-slate-400' : 'text-blue-500'}`} />
-                         <div className="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 w-56 p-2.5 bg-slate-900 text-white text-[11px] leading-snug rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 shadow-xl pointer-events-none text-left">
-                           <p className="font-bold mb-1">Subsídio Pix</p>
-                           <p className="mb-1">Cliente paga menos via Pix. O desconto é absorvido pela Shopee — sua margem de lucro permanece a mesma.</p>
-                           <p className="font-semibold">Faixas:</p>
-                           <ul className="list-disc pl-3 mt-0.5 space-y-0">
-                             <li>Até R$79,99: <strong>Sem</strong></li>
-                             <li>R$80–R$499,99: <strong>5%</strong></li>
-                             <li>+R$500: <strong>8%</strong></li>
-                           </ul>
-                           <div className="absolute left-1/2 top-full -translate-x-1/2 border-8 border-transparent border-t-slate-900"></div>
-                         </div>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        if (pixBlocked) return;
-                        onUpdateConfig(config.id, { shopeePixSubsidy: !config.shopeePixSubsidy });
-                      }}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
-                        pixBlocked 
-                          ? 'bg-slate-200 dark:bg-slate-700 cursor-not-allowed' 
-                          : config.shopeePixSubsidy 
-                            ? 'bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900' 
-                            : 'bg-slate-300 dark:bg-slate-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900'
-                      }`}
-                    >
-                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${config.shopeePixSubsidy && !pixBlocked ? 'translate-x-6' : 'translate-x-1'}`} />
-                    </button>
-                  </div>
-                  {pixBlocked && (
-                    <div className="flex items-start gap-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5">
-                      <Info className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-                      <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                        O Subsídio Pix não está disponível para produtos até <strong>R$ 79,99</strong>. Ele é aplicado apenas a partir de <strong>R$ 80,00</strong>.
-                      </span>
-                    </div>
-                  )}
-                </div>
-              );
-            })()}
           </div>
         )}
 
@@ -676,36 +611,9 @@ export const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ config, global
                         </span>
                     </span>
                     <span className="text-red-600 dark:text-red-400 font-semibold">- R$ {breakdown.affiliate.toFixed(2)}</span>
-                  </div>
-                  )}
-                  {/* Shopee Pix Subsidy Info */}
-                  {config.type === 'shopee' && config.shopeePixSubsidy && (() => {
-                    const price = safe(globalValues.sellingPrice);
-                    const quantity = globalValues.quantity ? safe(globalValues.quantity) : 1;
-                    const fees = getShopeeFees(price, config.shopeeSellerType || 'cnpj', 'standard');
-                    if (fees.pixSubsidyRate <= 0) return null;
-                    const subsidyValue = fees.pixSubsidyValue * quantity;
-                    return (
-                      <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg px-3 py-2.5 mt-1 space-y-1.5 border border-blue-100 dark:border-blue-900">
-                         <div className="flex items-center gap-1.5 mb-1">
-                           <span className="text-xs font-bold text-blue-700 dark:text-blue-300">💳 Subsídio Pix ({fees.pixSubsidyRate}% sobre {fees.commissionRate}%)</span>
-                         </div>
-                         <div className="flex justify-between items-center text-sm">
-                           <span className="text-blue-600 dark:text-blue-400 font-medium">Taxa efetiva</span>
-                           <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                             {(fees.commissionRate - (fees.commissionRate * fees.pixSubsidyRate / 100)).toFixed(2)}%
-                           </span>
-                         </div>
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="text-blue-600 dark:text-blue-400 font-medium">Cliente paga</span>
-                          <span className="text-blue-700 dark:text-blue-300 font-semibold">
-                            R$ {(price * quantity - (fees.pixSubsidyValue * quantity)).toFixed(2)}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })()}
-             </div>
+                   </div>
+                   )}
+              </div>
 
              <div className="h-px bg-slate-200 dark:bg-slate-800 my-4"></div>
 

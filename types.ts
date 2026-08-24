@@ -33,7 +33,6 @@ export interface MarketplaceConfig {
   isFullSuper?: boolean; // Toggle for Mercado Livre Full Supermarket rules
   // Shopee specific
   shopeeSellerType?: 'cnpj' | 'cpf';
-  shopeePixSubsidy?: boolean;
 }
 
 export interface CalculationResult {
